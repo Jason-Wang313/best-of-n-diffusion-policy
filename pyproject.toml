@@ -3,7 +3,7 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "best-of-n-diffusion"
+name = "best-of-n-diffusion-policy"
 version = "0.1.0"
 description = "Best-of-N laws for diffusion policy trajectory reranking."
 readme = "README.md"

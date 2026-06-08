@@ -1,6 +1,6 @@
-# How Many Diffusion Trajectories Should a Robot Sample?
+# Best-of-N Diffusion Policy
 
-Inference-time selection laws for diffusion action policies.
+Paper title: How Many Diffusion Trajectories Should a Robot Sample? Inference-time selection laws for diffusion action policies.
 
 This repository studies inference-time selection for stochastic diffusion action generators. Given an observation `o`, a sampler proposes `N` action trajectories, a reranker score `S(o, tau)` selects the top-scoring candidate, and the measured quantity is real task utility minus optional denoising latency cost.
 
