@@ -9,7 +9,7 @@ description = "Best-of-N laws for diffusion policy trajectory reranking."
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-  "numpy>=1.23",
+  "numpy>=1.23,<2",
   "pandas>=1.5",
   "matplotlib>=3.7",
   "torch>=2.0",
