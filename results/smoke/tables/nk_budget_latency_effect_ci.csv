@@ -1,0 +1,2 @@
+effect,best_N,best_K,high_N,high_K,n,mean,se,ci_low,ci_high,confidence
+best_latency_adjusted_minus_high_budget_corner,16,4,32,32,5,3.3400198415281395,0.06730531307302384,3.2305927068089977,3.4670093774508084,0.95

@@ -1,0 +1,52 @@
+{
+  "artifact_tables": {
+    "aggregate": "results/tables/learned_policy_lite_aggregate.csv",
+    "curves": "results/tables/learned_policy_lite_curves.csv",
+    "effect_cis": "results/tables/learned_policy_lite_effect_cis.csv",
+    "receding_horizon": "results/tables/learned_policy_lite_receding_horizon.csv",
+    "seed_aggregate": "results/tables/learned_policy_lite_seed_aggregate.csv",
+    "training": "results/tables/learned_policy_lite_training.csv"
+  },
+  "conditioning_modes": [
+    "state",
+    "image"
+  ],
+  "diffusion_policy_validity_checklist": {
+    "action_sequence_generation": true,
+    "conditioning_on_observation_or_state": true,
+    "image_conditioning_with_tiny_cnn": true,
+    "iterative_denoising_or_noise_to_action_generation": true,
+    "label": "learned Diffusion Policy-lite",
+    "receding_horizon_or_trajectory_execution_evaluation": true,
+    "stochastic_trajectory_generation": true
+  },
+  "image_size": 32,
+  "k_values": [
+    4
+  ],
+  "loss_decreased_all_seed_conditioning_pairs": true,
+  "max_image_loss_ratio": 0.3930040076011681,
+  "max_loss_ratio": 0.3930040076011681,
+  "max_state_loss_ratio": 0.21726067711680247,
+  "n_values": [
+    1,
+    2,
+    4,
+    8,
+    16,
+    32
+  ],
+  "num_training_seeds": 3,
+  "ood_regimes": [
+    "distractors",
+    "shifted_colors",
+    "observation_noise",
+    "hidden_obstacle"
+  ],
+  "visual_ood_regimes": [
+    "distractors",
+    "shifted_colors",
+    "observation_noise",
+    "hidden_obstacle"
+  ]
+}

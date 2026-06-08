@@ -1,0 +1,16 @@
+regime,scorer,metric,n,mean,se,ci_low,ci_high,confidence,low_n,high_n,effect,value_col
+high_diversity_aligned,aligned,exact_selected_real,16,0.6007542471204472,0.02606204686769357,0.5495712812712034,0.6501700842869218,0.95,1,64,high_minus_low,exact_selected_real
+high_diversity_aligned,aligned,exact_selected_score,16,0.6009826063815173,0.02675111468372568,0.5529710463500727,0.6517818698346307,0.95,1,64,high_minus_low,exact_selected_score
+high_diversity_aligned,aligned,high_n_regret,16,0.0,0.0,0.0,0.0,0.95,1,64,high_minus_low,high_n_regret
+high_diversity_aligned,aligned,effective_sample_diversity,16,0.0,0.0,0.0,0.0,0.95,1,64,high_minus_low,effective_sample_diversity
+high_diversity_aligned,aligned,duplicate_collapse_rate,16,0.0,0.0,0.0,0.0,0.95,1,64,high_minus_low,duplicate_collapse_rate
+high_diversity_misaligned,misaligned_tail,exact_selected_real,16,-0.3017741508538727,0.028115054729631443,-0.35303406432884415,-0.24779455803175626,0.95,1,64,high_minus_low,exact_selected_real
+high_diversity_misaligned,misaligned_tail,exact_selected_score,16,0.4178291912340526,0.023451026652178103,0.3718022355089883,0.4649515359991796,0.95,1,64,high_minus_low,exact_selected_score
+high_diversity_misaligned,misaligned_tail,high_n_regret,16,0.0,0.0,0.0,0.0,0.95,1,64,high_minus_low,high_n_regret
+high_diversity_misaligned,misaligned_tail,effective_sample_diversity,16,0.0,0.0,0.0,0.0,0.95,1,64,high_minus_low,effective_sample_diversity
+high_diversity_misaligned,misaligned_tail,duplicate_collapse_rate,16,0.0,0.0,0.0,0.0,0.95,1,64,high_minus_low,duplicate_collapse_rate
+low_diversity_high_quality,aligned,exact_selected_real,16,-4.5102810375396984e-17,2.2176796103666226e-16,-4.789571517171964e-16,4.2327252813834093e-16,0.95,1,64,high_minus_low,exact_selected_real
+low_diversity_high_quality,aligned,exact_selected_score,16,0.037946411475885566,0.0008384530156849068,0.03655281709505922,0.039444416933548276,0.95,1,64,high_minus_low,exact_selected_score
+low_diversity_high_quality,aligned,high_n_regret,16,0.0,0.0,0.0,0.0,0.95,1,64,high_minus_low,high_n_regret
+low_diversity_high_quality,aligned,effective_sample_diversity,16,0.0,0.0,0.0,0.0,0.95,1,64,high_minus_low,effective_sample_diversity
+low_diversity_high_quality,aligned,duplicate_collapse_rate,16,0.0,0.0,0.0,0.0,0.95,1,64,high_minus_low,duplicate_collapse_rate

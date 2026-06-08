@@ -1,0 +1,144 @@
+{
+  "aligned_real_gain_high_minus_low": 0.5405153203936065,
+  "aligned_score_gain_high_minus_low": 0.542664408068445,
+  "artifact_tables": {
+    "aggregate": "results/tables/controlled_sampler_aggregate.csv",
+    "curves": "results/tables/controlled_sampler_curves.csv",
+    "diversity": "results/tables/controlled_sampler_diversity.csv",
+    "effect_cis": "results/tables/controlled_sampler_effect_cis.csv",
+    "seed_aggregate": "results/tables/controlled_sampler_seed_aggregate.csv"
+  },
+  "effect_cis": {
+    "high_diversity_aligned:duplicate_collapse_rate": {
+      "ci_high": 0.0,
+      "ci_low": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "se": 0.0
+    },
+    "high_diversity_aligned:effective_sample_diversity": {
+      "ci_high": 0.0,
+      "ci_low": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "se": 0.0
+    },
+    "high_diversity_aligned:exact_selected_real": {
+      "ci_high": 0.5988411564156149,
+      "ci_low": 0.4728617094720023,
+      "mean": 0.5405153203936063,
+      "n": 5,
+      "se": 0.037907665815874306
+    },
+    "high_diversity_aligned:exact_selected_score": {
+      "ci_high": 0.6009701151144322,
+      "ci_low": 0.48387928345548054,
+      "mean": 0.5426644080684448,
+      "n": 5,
+      "se": 0.036423062680527266
+    },
+    "high_diversity_aligned:high_n_regret": {
+      "ci_high": 0.0,
+      "ci_low": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "se": 0.0
+    },
+    "high_diversity_misaligned:duplicate_collapse_rate": {
+      "ci_high": 0.0,
+      "ci_low": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "se": 0.0
+    },
+    "high_diversity_misaligned:effective_sample_diversity": {
+      "ci_high": 0.0,
+      "ci_low": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "se": 0.0
+    },
+    "high_diversity_misaligned:exact_selected_real": {
+      "ci_high": -0.30371474293718353,
+      "ci_low": -0.5198872345222589,
+      "mean": -0.4137173469104889,
+      "n": 5,
+      "se": 0.06356407941256424
+    },
+    "high_diversity_misaligned:exact_selected_score": {
+      "ci_high": 0.39199627780784174,
+      "ci_low": 0.3007116769459828,
+      "mean": 0.3539448633612026,
+      "n": 5,
+      "se": 0.02599796998857313
+    },
+    "high_diversity_misaligned:high_n_regret": {
+      "ci_high": 0.0,
+      "ci_low": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "se": 0.0
+    },
+    "low_diversity_high_quality:duplicate_collapse_rate": {
+      "ci_high": 0.0,
+      "ci_low": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "se": 0.0
+    },
+    "low_diversity_high_quality:effective_sample_diversity": {
+      "ci_high": 0.0,
+      "ci_low": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "se": 0.0
+    },
+    "low_diversity_high_quality:exact_selected_real": {
+      "ci_high": 5.551115123125783e-16,
+      "ci_low": -6.217248937900876e-16,
+      "mean": -2.2204460492503132e-17,
+      "n": 5,
+      "se": 3.5002851218456244e-16
+    },
+    "low_diversity_high_quality:exact_selected_score": {
+      "ci_high": 0.042007591133958376,
+      "ci_low": 0.03411685514767036,
+      "mean": 0.038062223140814366,
+      "n": 5,
+      "se": 0.0024088540873819
+    },
+    "low_diversity_high_quality:high_n_regret": {
+      "ci_high": 0.0,
+      "ci_low": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "se": 0.0
+    }
+  },
+  "high_diversity_real_gain_high_minus_low": 0.5405153203936065,
+  "low_diversity_has_small_marginal_value": true,
+  "low_diversity_low_gain_regime": "low_diversity_high_quality",
+  "low_diversity_real_gain_high_minus_low": -1.1102230246251565e-16,
+  "misaligned_high_n_regret": 1.0080486387724752,
+  "misaligned_real_change_high_minus_low": -0.413717346910489,
+  "misaligned_score_gain_high_minus_low": 0.35394486336120257,
+  "n_values": [
+    1,
+    2,
+    4,
+    8,
+    16,
+    32,
+    64
+  ],
+  "regimes": [
+    "low_diversity_high_quality",
+    "high_diversity_aligned",
+    "high_diversity_misaligned",
+    "collapsed_sampler",
+    "noisy_low_k_sampler",
+    "expensive_high_k_sampler"
+  ],
+  "selected_score_improves_real_improves_regime": "high_diversity_aligned",
+  "selected_score_improves_real_saturates_or_decreases_regime": "high_diversity_misaligned"
+}

@@ -1,0 +1,13 @@
+regime,metric,n,mean,se,ci_low,ci_high,confidence,low_n,high_n,effect,value_col,N
+hidden_obstacle_high_diversity,exact_selected_real,5,-0.36024644146774204,0.05457591395157749,-0.46949947652400414,-0.267135619317113,0.95,1.0,64.0,high_minus_low,exact_selected_real,
+hidden_obstacle_high_diversity,exact_selected_score,5,0.5142671777320423,0.04623707651384408,0.4349012250470249,0.5921054689769385,0.95,1.0,64.0,high_minus_low,exact_selected_score,
+hidden_obstacle_high_diversity,exact_selected_real,5,1.0239420249462678,0.09585953587926145,0.8667071911239699,1.2487924262291568,0.95,,,calibrated_critic_minus_misaligned_tail_scorer,exact_selected_real,64.0
+hidden_obstacle_high_diversity,exact_selected_real,5,1.0759415176592102,0.09537917769190313,0.9149425213856223,1.2456604510860192,0.95,,,oracle_real_utility_selector_minus_misaligned_tail_scorer,exact_selected_real,64.0
+id_high_diversity,exact_selected_real,5,-0.3120314805917488,0.058780802885705766,-0.41267936000243016,-0.2083605535092868,0.95,1.0,64.0,high_minus_low,exact_selected_real,
+id_high_diversity,exact_selected_score,5,0.4213080670010404,0.030685307875076923,0.36980267658248256,0.47804300322866283,0.95,1.0,64.0,high_minus_low,exact_selected_score,
+id_high_diversity,exact_selected_real,5,0.687918833526917,0.06947899923314567,0.5720073915734175,0.8001022176302126,0.95,,,calibrated_critic_minus_misaligned_tail_scorer,exact_selected_real,64.0
+id_high_diversity,exact_selected_real,5,0.8412399873420092,0.07838040600239979,0.68712342815785,0.9647819435252398,0.95,,,oracle_real_utility_selector_minus_misaligned_tail_scorer,exact_selected_real,64.0
+low_diversity_collapsed,exact_selected_real,5,1.1102230246251566e-17,3.538808679539424e-16,-5.948019854429273e-16,5.995204332975846e-16,0.95,1.0,64.0,high_minus_low,exact_selected_real,
+low_diversity_collapsed,exact_selected_score,5,0.04356755749159455,0.002543985131349103,0.03911494382548147,0.04798611195884074,0.95,1.0,64.0,high_minus_low,exact_selected_score,
+low_diversity_collapsed,exact_selected_real,5,1.1102230246251566e-17,2.7194799110210363e-17,-3.3306690738754695e-17,6.661338147750939e-17,0.95,,,calibrated_critic_minus_misaligned_tail_scorer,exact_selected_real,64.0
+low_diversity_collapsed,exact_selected_real,5,1.1102230246251566e-17,2.7194799110210363e-17,-3.3306690738754695e-17,6.661338147750939e-17,0.95,,,oracle_real_utility_selector_minus_misaligned_tail_scorer,exact_selected_real,64.0

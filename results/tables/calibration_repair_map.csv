@@ -1,0 +1,4 @@
+regime,N,calibrated_minus_misaligned_high_n,oracle_minus_misaligned_high_n,repair_fraction_of_oracle_gap,repair_status
+hidden_obstacle_high_diversity,64,0.9500045870248728,1.0603415902702729,0.8959420207055389,strong_repair
+id_high_diversity,64,0.8314833238672856,0.8957171542183922,0.9282878193762435,no_strong_repair
+low_diversity_collapsed,64,0.0,0.0,0.0,no_strong_repair

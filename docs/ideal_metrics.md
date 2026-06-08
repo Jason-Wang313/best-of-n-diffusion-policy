@@ -1,0 +1,15 @@
+# Ideal Metrics Gate
+
+`scripts/claim_audit.py` treats `SUPPORTED` as a strong result, not a minimal pass. It also writes `results/ideal_metrics_status.json` and `results/ideal_metrics_status.md`. For promoted empirical effects, point estimates must be backed by bootstrap or paired seed/state confidence intervals.
+
+The strong gate currently requires:
+
+- aligned high-diversity selection: selected score gain and real utility gain at least `0.50`, CI lower bounds at least `0.35`, score-utility correlation at least `0.99`, tail rank correlation at least `0.95`, and high-`N` regret at most `0.01`;
+- misaligned selection: selected score gain at least `0.35` while real utility changes by at most `-0.25`, with high-`N` regret at least `0.80`, and CI evidence that the real-utility change remains negative;
+- low-diversity regime: absolute high-minus-low `N` real gain at most `0.02`, its CI contained in `[-0.02, 0.02]`, effective sample diversity at most `1.05`, and duplicate collapse rate at least `0.98`;
+- `N` versus `K` sweep: at least six `N` values, five `K` values, and thirty phase-grid rows;
+- latency rule: best latency-adjusted policy uses at most ten percent of the high-budget corner and improves latency-adjusted utility by at least `2.0`, with paired CI lower bound at least `1.50`;
+- calibration repair: calibrated scorer recovers at least `0.80` real utility and at least seventy-five percent of the oracle-minus-misaligned gap, with a calibration map containing at least one strong repair row and at least one no-strong-repair row;
+- learned Diffusion Policy-lite: all validity checklist items true, four visual OOD regimes, state and image conditioning, 32x32 images, full-run training over at least three seeds, loss ratios at most `0.30` for state and `0.65` for image, aggregate and seed-aggregate rows at least `200`, receding-horizon rows at least `20`, and calibrated `K=4` real gains at least `0.08` with CI lower bound at least `0.04` across state/image ID/OOD regimes.
+
+These thresholds are synthetic-toy effect-size gates. They are not real-robot deployment guarantees.
