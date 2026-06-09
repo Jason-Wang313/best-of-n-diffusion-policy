@@ -1,0 +1,179 @@
+\documentclass{article}
+\usepackage{iclr2026_conference,times}
+\input{math_commands.tex}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{url}
+
+\title{How Many Diffusion Trajectories Should a Robot Sample?\\
+Inference-Time Selection Laws for Diffusion Policies}
+
+% Leave \iclrfinalcopy commented for anonymous review submissions.
+\author{Anonymous Authors\\Paper under double-blind review}
+
+\newcommand{\ats}{Audit-Then-Sample}
+\newcommand{\bon}{Best-of-$N$}
+\newcommand{\ci}{95\% CI}
+\newcommand{\lcb}{LCB}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Diffusion action policies can sample many candidate trajectories for a single observation, making \bon{} inference an attractive test-time knob. This paper asks when the extra sampling is actually useful. We study finite observation-conditioned candidate pools in which each trajectory has a selection score and a measured task utility. A tie-aware selection law shows that larger $N$ always improves selected score, but need not improve real utility: the outcome depends on candidate diversity, upper-tail score--utility alignment, and latency. We propose \ats{}, an inference-time controller that admits high-$N$ sampling only when empirical lower-bound gates certify diversity, tail utility, utility gain, and latency-adjusted gain; otherwise it abstains, audits rollouts, repairs the scorer, increases diversity, reduces denoising depth, stops early, or blocks high-$N$ selection. The evidence is CPU-simulation evidence: controlled action samplers, learned state and small-image diffusion-policy-lite denoisers, true epsilon-prediction DDPM/DDIM action diffusion, and a PushT simulator path with actual rollout utility. The audited full run supports the conditional claim and rejects universal high-$N$ improvement: true DDPM and PushT aligned oracle reranking improve under high $N$, while anti-correlated or misaligned scorers are harmful and the controller has zero false admits in harmful negative controls.
+\end{abstract}
+
+\section{Introduction}
+
+Diffusion Policy-style controllers generate action trajectories by iterative denoising conditioned on the current observation \citep{chi2023diffusionpolicy,ho2020ddpm,song2020ddim}. Because generation is stochastic, a deployment can sample multiple trajectories, score them with a critic, value model, likelihood proxy, or reranker, and execute the highest-scoring candidate. This creates a simple practical question: how many diffusion trajectories should a robot sample?
+
+The naive answer is ``more''. If the score is aligned with real task utility, more candidates increase the chance of finding a good trajectory. Yet the same maximization can amplify artifacts. A scorer that rewards shortcuts, risky modes, duplicated samples, or likelihood quirks can become worse as $N$ increases because \bon{} searches harder through the scorer's upper tail. This failure is not visible from selected score alone, and it can survive moderate average score--utility correlation. What matters is the finite joint distribution of score and utility in the high-score tail.
+
+We study \bon{} as an inference-time selection law over sampled action trajectories. For a fixed observation $o$, a generator produces a finite pool $\{(\tau_i,S_i,U_i)\}_{i=1}^M$, where $\tau_i$ is an action trajectory, $S_i$ is the selection score, and $U_i$ is measured task utility after optional latency cost. \bon{} draws $N$ candidates and executes the one with maximum score. This framing separates three mechanisms: diversity determines whether additional candidates expose new options; upper-tail alignment determines whether high-score candidates are high-utility candidates; and latency determines whether extra sampling remains worthwhile.
+
+Our contribution is a diagnose-predict-control framework, not a broad robot benchmark suite.
+
+\begin{enumerate}
+\item We give a finite, tie-aware \bon{} law that separates monotone selected-score improvement from real-utility improvement.
+\item We introduce \ats{}, a conservative controller that certifies high-$N$ only under lower-bound evidence and otherwise emits an abstention or repair action.
+\item We test the mechanism across controlled samplers, learned diffusion-policy-lite models, true action DDPM/DDIM sampling, and PushT simulator rollouts.
+\item We package each headline claim with CSV/JSON provenance, confidence intervals, negative controls, and overclaim checks.
+\end{enumerate}
+
+\section{Finite Selection Law}
+
+For one observation, sort the finite pool by nondecreasing score. Let a score-tie group $g$ occupy ranks $a_g,\ldots,b_g$ among $M$ candidates and let $\bar U_g$ be the mean utility in that tied group. Sampling with replacement and breaking top-score ties uniformly, the expected selected utility is
+\begin{equation}
+\mathbb{E}[U_{N}^{\mathrm{sel}}]
+= \sum_g \bar U_g
+\left[
+\left(\frac{b_g}{M}\right)^N
+- \left(\frac{a_g-1}{M}\right)^N
+\right].
+\label{eq:finite-law}
+\end{equation}
+The same expression with $\bar S_g$ gives selected score. Equation~\ref{eq:finite-law} immediately gives selected-score monotonicity in $N$, because the maximum score over a larger sample cannot decrease in expectation. It does not give selected-utility monotonicity. Utility improves only when mass that enters the high-score tail also has high real utility; utility saturates when the pool is collapsed; and utility can decrease when the score tail is anti-aligned with the task.
+
+The controller uses this law as an audited finite-population object. Candidate diversity is summarized by effective sample diversity, pairwise trajectory distance, duplicate collapse rate, cluster count, and cluster entropy. Tail alignment is summarized by score--utility correlation, upper-tail rank correlation, top-score-tail utility, high-$N$ regret, and oracle-minus-scorer gaps. Runtime is represented by measured or modeled cost $C(N,K)$ for sample count $N$ and denoising depth $K$, with latency-adjusted utility $U-\lambda C(N,K)$.
+
+\section{\ats{}}
+
+\ats{} converts the diagnostics into an inference-time decision. Its inputs are candidate trajectories and scores, optional audited utilities from pilot rollouts, a candidate $N,K$ grid, diversity diagnostics, a runtime model or measured runtimes, and risk budget $\delta$. Its output is a selected $N,K$, a decision label, confidence diagnostics, and one recommendation from \{\texttt{increase\_N}, \texttt{stop\_early}, \texttt{reduce\_K}, \texttt{calibrate\_scorer}, \texttt{audit\_rollouts}, \texttt{increase\_diversity}, \texttt{block\_high\_N}\}.
+
+The admission rule is deliberately one-sided. The controller admits \texttt{increase\_N} only if candidate diversity is sufficient; empirical-Bernstein lower bounds \citep{maurer2009empirical} on high-minus-low utility gain, top-score-tail utility, and latency-adjusted gain are positive; and high-score-tail harm is not plausible under the corresponding upper confidence gate. If utilities are missing, it requests rollout auditing or calibration. If the pool is collapsed, it recommends diversity repair. If the upper tail is anti-aligned or high-$N$ utility is harmful, it blocks high-$N$. Isotonic or affine calibration \citep{zadrozny2002transforming,guo2017calibration} is used only when held-out lower-bound gates pass.
+
+Under the bounded audit assumptions used by these confidence gates, if the controller spends total risk $\delta$ across the one-sided tests, then with probability at least $1-\delta$ every admitted \texttt{increase\_N} row has positive audited latency-adjusted high-minus-low gain under the finite audited distribution. This is not a universal improvement theorem: without measured utilities or a valid bound tying scores to real utility, \ats{} abstains.
+
+\begin{figure}[t]
+\centering
+\begin{minipage}{0.49\linewidth}
+\centering
+\includegraphics[width=\linewidth]{figures/scorer_comparison.png}
+\end{minipage}
+\hfill
+\begin{minipage}{0.49\linewidth}
+\centering
+\includegraphics[width=\linewidth]{figures/audit_then_sample_decision_regions.png}
+\end{minipage}
+\caption{Selection is useful only under the right tail conditions. Left: scorer comparison exposes aligned, calibrated, and misaligned upper-tail behavior. Right: \ats{} admits high $N$ only in certified regions and otherwise emits abstention, repair, diversity, latency, or block actions.}
+\label{fig:controller}
+\end{figure}
+
+\section{Experiments}
+
+We evaluate four tiers, each with claim-audited artifacts. Controlled diffusion-like samplers isolate the mechanisms. Learned diffusion-policy-lite models train small state-conditioned and $32{\times}32$ image-conditioned denoisers over action horizons. The main learned diffusion tier trains true epsilon-prediction action DDPM/DDIM samplers, including fast DDIM, stochastic DDPM, one-step consistency-style, and clean-target ablations. The PushT tier uses \texttt{gym\_pusht/PushT-v0} with low-dimensional observations, heuristic demonstrations for CPU-feasible training, sampled action trajectories, and actual simulator rollout utility. PushT is simulator evidence for the inference-time law, not real-robot or full visual-policy validation.
+
+\begin{table}[t]
+\caption{Audited full-run evidence. Gains are high-minus-low selected utility unless noted. The \bon{} claim is conditional: aligned oracle or calibrated tails can help, while misaligned tails can hurt.}
+\label{tab:main-evidence}
+\centering
+\small
+\begin{tabular}{@{}p{0.22\linewidth}p{0.23\linewidth}p{0.22\linewidth}p{0.16\linewidth}@{}}
+\toprule
+Tier & Positive evidence & Negative/control evidence & Units \\
+\midrule
+Controlled sampler & aligned gain $0.601$, \ci{} low $0.550$ & misaligned change $-0.302$, \ci{} high $-0.248$; low-diversity gain $\approx 0$ & 16 seed/state units \\
+\ats{} & 16 admissions; min utility/tail/latency \lcb{}s $0.833/0.802/0.827$ & false-admit rate $0.0$; 112 \texttt{block\_high\_N} actions & 256 decision rows \\
+Learned-lite & state gains $0.114$--$0.167$; image gains $0.150$--$0.154$ & supporting tier only; not used for broad visual-policy wording & 3 training seeds \\
+True action diffusion & DDIM oracle gain $0.370$, \ci{} low $0.326$; DDPM oracle gain $0.381$, \ci{} low $0.336$ & anti-correlated change $-0.406$, \ci{} high $-0.371$ & 12 seed/state units \\
+PushT simulator & utility gain $0.121$, \ci{} low $0.0576$; max-coverage gain $0.103$, \ci{} low $0.0381$ & misaligned change $-0.048$, \ci{} high $-0.031$; success gain $0.0$ & 12 seed/episode units \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Mechanism tests.}
+The controlled sampler confirms the finite law. Selected score rises with $N$ even when real utility falls under a misaligned tail; aligned high-diversity selection improves utility; collapsed or low-diversity pools saturate. The latency sweep shows that raw utility is not the only objective: with $U-\lambda C(N,K)$, the best audited budget is $N=32,K=2$, using $6.25\%$ of the largest tested $N{\times}K$ budget and improving the latency-adjusted objective over the high-budget corner by $3.31$ (\ci{} low $3.23$).
+
+\paragraph{Controller audit.}
+The controller audit includes aligned pools, anti-correlated scorers, shuffled scorers, adversarial-tail and tail-misaligned scorers, duplicated high-score artifacts, correlated candidate pools, hidden OOD dynamics, missing utility, latency spikes, underpowered audits, adaptive stopping, successful calibration, failed repair, and calibration drift. In the full run, \ats{} has 256 decision rows, admits high $N$ in 16 rows, abstains or chooses another action in 240 rows, has zero false admits in harmful negative controls, and records lower-bound coverage $1.0$. Calibration is intentionally asymmetric: 19 held-out repair rows pass and 45 rows fail or remain negative controls.
+
+\paragraph{Diffusion-policy tiers.}
+Learned-lite results support the diagnostic pipeline on learned state and small-image denoisers, but they are not used alone for global diffusion-policy wording. The true action diffusion tier is the main learned evidence: both DDIM and stochastic DDPM oracle reranking have positive lower bounds, while anti-correlated scoring is harmful. Runtime is measured directly, with 540 true-diffusion rows spanning $0.18$ to $13.42$ ms per candidate. PushT supplies simulator rollout evidence: aligned oracle reranking improves utility and coverage, low-diversity gains are small, and a high-temperature misaligned scorer is harmful. PushT runtime includes rollout cost and spans $104.78$ to $373.44$ ms per candidate.
+
+\begin{figure}[t]
+\centering
+\begin{minipage}{0.49\linewidth}
+\centering
+\includegraphics[width=\linewidth]{figures/true_diffusion_survival.png}
+\end{minipage}
+\hfill
+\begin{minipage}{0.49\linewidth}
+\centering
+\includegraphics[width=\linewidth]{figures/pusht_best_of_n.png}
+\end{minipage}
+\caption{The conditional law survives beyond controlled samplers. Left: true epsilon-prediction action DDPM/DDIM sampling shows aligned oracle gains and harmful negative controls. Right: PushT simulator rollouts show aligned utility and coverage gains, low-diversity saturation, and misaligned-scorer failure.}
+\label{fig:diffusion-pusht}
+\end{figure}
+
+\section{Related Work}
+
+Diffusion models turn iterative denoising into a flexible generative mechanism \citep{sohl2015deep,ho2020ddpm,song2020ddim}; Diffusion Policy applies this idea to visuomotor action sequence generation and highlights multimodal action distributions \citep{chi2023diffusionpolicy}. Test-time reranking and verifier-based selection are common in sequence generation and decision problems \citep{cobbe2021training,yao2023tree}, but selected-score maximization is only useful when the score tail reflects the target utility. In robotics and imitation learning, value critics, behavior-cloning scores, implicit policies, and offline trajectory models provide possible rerankers or action generators \citep{florence2022implicit,janner2022diffuser,mandlekar2021robomimic}. Our focus is narrower: a finite audit of when increasing sampled diffusion trajectories is certified, harmful, saturated, or latency-dominated.
+
+\section{Audit Discipline and Limitations}
+
+All promoted claims must pass the claim audit. The full-run audit reports \texttt{all\_strong=true}, 18 supported claims, no partial or unsupported claims, no full-run low-power warning, true-DDPM and PushT gates supported, negative controls present, runtime evidence present, and no real-robot or full visual-policy overclaim. Main-text numbers in Tables~\ref{tab:main-evidence} and \ref{tab:artifact-map-short} are backed by the appendix artifact map and anonymous supplementary material.
+
+The evidence is CPU simulation evidence. The controlled sampler is hand-designed. The learned-lite tier is intentionally small. The image-conditioned path uses $32{\times}32$ toy renderings and a tiny CNN. The true action diffusion tier uses faithful epsilon-prediction DDPM/DDIM action sampling, but on a small toy manipulation dataset. PushT is a simulator benchmark path with low-dimensional observations and heuristic demonstrations. We do not claim real-robot validation, universal Diffusion Policy improvement, hardware safety certification, or full visual PushT imitation-learning validation.
+
+\begin{table}[t]
+\caption{Main artifact pointers. Repo-relative paths are kept in the appendix and anonymous supplement; public personal links are not used.}
+\label{tab:artifact-map-short}
+\centering
+\small
+\begin{tabular}{@{}p{0.22\linewidth}p{0.31\linewidth}p{0.28\linewidth}@{}}
+\toprule
+Claim family & Primary tables & Primary figures \\
+\midrule
+Finite law and diversity & \path{controlled_sampler_effect_cis.csv}; \path{controlled_sampler_diversity.csv} & \path{controlled_sampler_curves.png} \\
+Controller and repair & \path{audit_then_sample_decisions.csv}; \path{audit_then_sample_calibration.csv} & \path{audit_then_sample_decision_regions.png} \\
+Runtime & \path{nk_budget_latency_effect_ci.csv}; \path{true_diffusion_runtime.csv}; \path{pusht_runtime.csv} & \path{nk_budget_phase_diagram.png}; \path{true_diffusion_runtime.png} \\
+True DDPM/DDIM and PushT & \path{true_diffusion_effect_cis.csv}; \path{pusht_rollout_metric_effect_cis.csv} & \path{true_diffusion_survival.png}; \path{pusht_best_of_n.png} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Conclusion}
+
+High-$N$ diffusion-policy inference is conditionally useful, not universally beneficial. More samples help when the candidate pool is diverse, the scorer's upper tail selects genuinely high-utility trajectories, and latency cost is dominated by the utility gain. More samples saturate when diversity collapses and can hurt when the scorer's tail is misaligned. \ats{} turns this into a conservative deployment-facing rule: certify high $N$ with lower-bound audit evidence, otherwise abstain, audit, repair, reduce compute, increase diversity, or block high-$N$ selection.
+
+\section*{Reproducibility Statement}
+The anonymous supplementary material contains source code, result CSV/JSON artifacts, figure-generation outputs, seeds, hyperparameters, and exact reproduction commands. The theorem implementation is tested in \texttt{tests/test\_theory.py}; claim promotion is gated by \texttt{scripts/run\_claim\_audit.sh}; and the paper build is checked by \texttt{scripts/build\_iclr\_paper.py}. Appendix~\ref{app:repro} maps each main claim to tracked artifacts.
+
+\section*{Ethics and Impact Statement}
+This work studies inference-time sampling decisions in CPU simulation. It does not use human subjects, private data, real-robot deployment, or safety-critical hardware trials. The main risk is over-interpreting simulated audit evidence as a hardware safety guarantee; the paper explicitly blocks that interpretation and requires fresh task-specific audits before using high-$N$ sampling in new settings.
+
+\section*{LLM Usage Statement}
+Large language models were used as general-purpose assistance for drafting, editing, and packaging. The authors are responsible for all claims, citations, experiments, and final text. No LLM-generated empirical results are reported.
+
+\phantomsection\label{maintextend}
+\bibliography{references}
+\bibliographystyle{iclr2026_conference}
+
+\appendix
+\input{appendix}
+
+\end{document}

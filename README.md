@@ -47,7 +47,7 @@ See `docs/readiness.md` for the final audit inventory, strongest supported claim
 Promoted claims must pass `scripts/run_claim_audit.sh`. Unsupported or partial claims remain research notes, not paper claims. In particular:
 
 - do not claim real-robot validation;
-- do not claim that Best-of-N always helps;
+- do not make universal high-`N` improvement claims;
 - do not claim that calibration always repairs every bad scorer;
 - do not claim that Audit-Then-Sample is a hardware safety certificate or production deployment rule;
 - do not claim that a hand-designed sampler is a full Diffusion Policy model;
