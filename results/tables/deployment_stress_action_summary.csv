@@ -1,0 +1,10 @@
+regime,adaptive_action,size
+calibration_drift,block_high_N,20
+diversity_collapse,increase_diversity,20
+duplicate_artifact,stop_early,20
+hidden_obstacle_tail,block_high_N,20
+latency_spike,block_high_N,20
+missing_utility,audit_rollouts,20
+nominal_aligned,block_high_N,20
+recovery_aligned,block_high_N,20
+weak_tail_alignment,block_high_N,20

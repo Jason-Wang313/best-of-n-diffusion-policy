@@ -6,6 +6,8 @@ from dataclasses import dataclass
 
 import numpy as np
 
+from diffusion_audit.theory import utility_max_selection_finite
+
 
 ALLOW_HIGH_N = "allow_high_n"
 STOP_EARLY = "stop_early"
@@ -52,3 +54,41 @@ def gate_from_metrics(**kwargs) -> str:
     if not all(np.isfinite(float(v)) for v in values.__dict__.values()):
         return CALIBRATE_RERANKER
     return deployment_gate(values)
+
+
+def latency_adjusted_selection_value(
+    real_utility: float,
+    *,
+    n: int,
+    k: int,
+    lambda_cost: float,
+    runtime_per_candidate_ms: float,
+    runtime_overhead_ms: float = 0.0,
+) -> float:
+    """Utility after a simple measured-runtime deployment cost."""
+
+    runtime_ms = float(runtime_overhead_ms) + int(n) * int(k) * float(runtime_per_candidate_ms)
+    return float(real_utility) - float(lambda_cost) * runtime_ms
+
+
+def expected_selection_record(
+    scores,
+    utilities,
+    *,
+    n: int,
+    k: int,
+    lambda_cost: float,
+    runtime_per_candidate_ms: float,
+    runtime_overhead_ms: float = 0.0,
+) -> dict[str, float | int]:
+    """Exact expected selected utility and latency-adjusted value for one policy."""
+
+    selected_real = utility_max_selection_finite(scores, utilities, [int(n)])[int(n)]
+    runtime_ms = float(runtime_overhead_ms) + int(n) * int(k) * float(runtime_per_candidate_ms)
+    return {
+        "N": int(n),
+        "K": int(k),
+        "expected_real_utility": float(selected_real),
+        "runtime_ms": float(runtime_ms),
+        "latency_adjusted_utility": float(selected_real) - float(lambda_cost) * float(runtime_ms),
+    }

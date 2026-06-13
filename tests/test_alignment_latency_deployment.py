@@ -18,6 +18,8 @@ from diffusion_audit.deployment import (
     STOP_EARLY,
     GateInputs,
     deployment_gate,
+    expected_selection_record,
+    latency_adjusted_selection_value,
 )
 from diffusion_audit.latency import (
     latency_adjusted_utility,
@@ -79,3 +81,27 @@ def test_deployment_gate_decisions():
     assert deployment_gate(
         GateInputs(5.0, 0.0, 0.8, 0.8, 0.1, 0.1, 0.1, 0.1)
     ) == ALLOW_HIGH_N
+
+
+def test_expected_selection_record_accounts_for_runtime_cost():
+    scores = np.asarray([0.0, 1.0, 2.0], dtype=float)
+    utilities = np.asarray([0.0, 1.0, 3.0], dtype=float)
+    record = expected_selection_record(
+        scores,
+        utilities,
+        n=3,
+        k=4,
+        lambda_cost=0.01,
+        runtime_per_candidate_ms=2.0,
+        runtime_overhead_ms=1.0,
+    )
+    assert record["expected_real_utility"] == pytest.approx(64.0 / 27.0)
+    assert record["runtime_ms"] == pytest.approx(25.0)
+    assert record["latency_adjusted_utility"] == pytest.approx(64.0 / 27.0 - 0.25)
+    assert latency_adjusted_selection_value(
+        1.5,
+        n=2,
+        k=3,
+        lambda_cost=0.05,
+        runtime_per_candidate_ms=4.0,
+    ) == pytest.approx(0.3)

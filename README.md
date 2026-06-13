@@ -28,7 +28,7 @@ pytest
 
 Artifacts are written under `results/` by default, or `results/smoke/` for the smoke script.
 
-The claim audit also writes `results/ideal_metrics_status.json`; in this repo, `SUPPORTED` means the corresponding strong effect-size and CI gate in `docs/ideal_metrics.md` passed. The smoke run keeps the learned and benchmark legs small, while the full run uses multi-seed learned state/image evidence plus 12-unit true-DDPM and PushT simulator rollout tiers.
+The claim audit also writes `results/ideal_metrics_status.json`; in this repo, `SUPPORTED` means the corresponding strong effect-size and CI gate in `docs/ideal_metrics.md` passed. The smoke run keeps the learned, benchmark, and deployment-stress legs small, while the full run uses multi-seed learned state/image evidence, 12-unit true-DDPM and PushT simulator rollout tiers, and a 180-row sequential deployment stress suite.
 
 See `docs/readiness.md` for the final audit inventory, strongest supported claim, weakest remaining claim, and CPU-only scope.
 
@@ -41,6 +41,7 @@ See `docs/readiness.md` for the final audit inventory, strongest supported claim
 - Family D: phase diagram over trajectory count `N` and denoising steps `K` at fixed budget pressure.
 - Family E: true epsilon-prediction action DDPM with DDIM sampling, stochastic DDPM-style sampling, one-step consistency-style sampling, measured runtime, and clean-target denoiser ablation over the enabled `K` grid.
 - Family F: PushT simulator benchmark path using `gym_pusht/PushT-v0`, heuristic demonstrations for CPU training, true action diffusion trajectory sampling, actual simulator rollout utility, selected coverage/success curves, reranker baselines, diversity diagnostics, and measured runtime.
+- Family G: sequential deployment stress with aligned, weak-tail, hidden-obstacle, duplicate-artifact, diversity-collapse, latency-spike, calibration-drift, missing-utility, and recovery regimes, comparing fixed low-`N`, fixed high-`N`, oracle high-`N`, static Audit-Then-Sample, and adaptive Audit-Then-Sample.
 
 ## Claim Boundary
 

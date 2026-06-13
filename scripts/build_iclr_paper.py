@@ -13,7 +13,7 @@ from pathlib import Path
 
 
 MAIN_PAGE_LIMIT = 9
-DEFAULT_DESKTOP_PDF = Path.home() / "OneDrive" / "Desktop" / "best of n diffusion policy-v2.pdf"
+DEFAULT_FINAL_PDF = Path("paper") / "iclr" / "final" / "best of n diffusion policy-v3.pdf"
 
 
 def run(cmd: list[str], cwd: Path) -> None:
@@ -86,9 +86,14 @@ def main() -> int:
     parser.add_argument("--paper-dir", default=None, help="Path to paper/iclr")
     parser.add_argument("--limit", type=int, default=MAIN_PAGE_LIMIT, help="Main-text page limit")
     parser.add_argument(
+        "--final-copy",
+        default=None,
+        help="Optional repo-local final PDF path. Defaults to paper/iclr/final/best of n diffusion policy-v3.pdf.",
+    )
+    parser.add_argument(
         "--desktop-copy",
-        default=str(DEFAULT_DESKTOP_PDF),
-        help="Optional path for the versioned final PDF copy.",
+        default="",
+        help="Optional Desktop copy path. Disabled by default so intermediate builds do not publish.",
     )
     parser.add_argument("--clean", action="store_true", help="Clean LaTeX intermediates after a successful build")
     args = parser.parse_args()
@@ -125,6 +130,13 @@ def main() -> int:
         raise RuntimeError(
             f"Main text is {main_pages} pages, exceeding the ICLR initial-submission limit of {args.limit}."
         )
+
+    final_copy = Path(args.final_copy).expanduser() if args.final_copy else repo_root / DEFAULT_FINAL_PDF
+    if not final_copy.is_absolute():
+        final_copy = repo_root / final_copy
+    final_copy.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(pdf_path, final_copy)
+    print(f"Final PDF: {final_copy}")
 
     if args.desktop_copy:
         desktop_copy = Path(args.desktop_copy).expanduser()

@@ -5,6 +5,7 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{booktabs}
+\usepackage{float}
 \usepackage{graphicx}
 \usepackage{hyperref}
 \hypersetup{hidelinks}
@@ -20,12 +21,13 @@ Certifying When Diffusion Policies Should Search More Trajectories}
 \newcommand{\maxsel}{maximum-score selection}
 \newcommand{\ci}{95\% CI}
 \newcommand{\lcb}{LCB}
+\input{../../results/deployment_stress_generated.tex}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-Diffusion action policies can sample many candidate trajectories for a single observation, making test-time trajectory search an attractive but risky knob. This paper asks when the extra sampling is actually useful. We study finite observation-conditioned candidate pools in which each trajectory has a selection score and a measured task utility. A tie-aware selection law shows that larger $N$ always improves selected score, but need not improve real utility: the outcome depends on candidate diversity, upper-tail score--utility alignment, and latency. We propose \ats{}, an inference-time controller that admits high-$N$ sampling only when empirical lower-bound gates certify diversity, tail utility, utility gain, and latency-adjusted gain; otherwise it abstains, audits rollouts, repairs the scorer, increases diversity, reduces denoising depth, stops early, or blocks high-$N$ selection. The evidence is CPU-simulation evidence: controlled action samplers, learned state and small-image diffusion-policy-lite denoisers, true epsilon-prediction DDPM/DDIM action diffusion, and a PushT simulator path with actual rollout utility. The audited full run supports the conditional claim and rejects universal high-$N$ improvement: true DDPM and PushT aligned oracle reranking improve under high $N$, while anti-correlated or misaligned scorers are harmful and the controller has zero false admits in harmful negative controls.
+Diffusion action policies can sample many candidate trajectories for a single observation, making test-time trajectory search an attractive but risky knob. This paper asks when the extra sampling is actually useful. We study finite observation-conditioned candidate pools in which each trajectory has a selection score and a measured task utility. A tie-aware selection law shows that larger $N$ always improves selected score, but need not improve real utility: the outcome depends on candidate diversity, upper-tail score--utility alignment, and latency. We propose \ats{}, an inference-time controller that admits high-$N$ sampling only when empirical lower-bound gates certify diversity, tail utility, utility gain, and latency-adjusted gain; otherwise it abstains, audits rollouts, repairs the scorer, increases diversity, reduces denoising depth, stops early, or blocks high-$N$ selection. The evidence is CPU-simulation evidence: controlled action samplers, learned state and small-image diffusion-policy-lite denoisers, true epsilon-prediction DDPM/DDIM action diffusion, a PushT simulator path with actual rollout utility, and a \AtsDeployStressRows-row sequential deployment stress suite. The audited full run supports the conditional claim and rejects universal high-$N$ improvement: true DDPM and PushT aligned oracle reranking improve under high $N$, while anti-correlated or misaligned scorers are harmful and the controller has zero false admits in harmful negative controls.
 \end{abstract}
 
 \section{Introduction}
@@ -41,7 +43,7 @@ Our contribution is a diagnose-predict-control framework, not a broad robot benc
 \begin{enumerate}
 \item We give a finite, tie-aware trajectory-selection law that separates monotone selected-score improvement from real-utility improvement.
 \item We introduce \ats{}, a conservative controller that certifies high-$N$ only under lower-bound evidence and otherwise emits an abstention or repair action.
-\item We test the mechanism across controlled samplers, learned diffusion-policy-lite models, true action DDPM/DDIM sampling, and PushT simulator rollouts.
+\item We test the mechanism across controlled samplers, learned diffusion-policy-lite models, true action DDPM/DDIM sampling, PushT simulator rollouts, and sequential deployment stress.
 \item We package each headline claim with CSV/JSON provenance, confidence intervals, negative controls, and overclaim checks.
 \end{enumerate}
 
@@ -86,22 +88,23 @@ Under the bounded audit assumptions used by these confidence gates, if the contr
 
 \section{Experiments}
 
-We evaluate four tiers, each with claim-audited artifacts. Controlled diffusion-like samplers isolate the mechanisms. Learned diffusion-policy-lite models train small state-conditioned and $32{\times}32$ image-conditioned denoisers over action horizons. The main learned diffusion tier trains true epsilon-prediction action DDPM/DDIM samplers, including fast DDIM, stochastic DDPM, one-step consistency-style, and clean-target ablations. The PushT tier uses \texttt{gym\_pusht/PushT-v0} with low-dimensional observations, heuristic demonstrations for CPU-feasible training, sampled action trajectories, and actual simulator rollout utility. PushT is simulator evidence for the inference-time law, not real-robot or full visual-policy validation.
+We evaluate five evidence views, each with claim-audited artifacts. Controlled diffusion-like samplers isolate the mechanisms. Learned diffusion-policy-lite models train small state-conditioned and $32{\times}32$ image-conditioned denoisers over action horizons. The main learned diffusion tier trains true epsilon-prediction action DDPM/DDIM samplers, including fast DDIM, stochastic DDPM, one-step consistency-style, and clean-target ablations. The PushT tier uses \texttt{gym\_pusht/PushT-v0} with low-dimensional observations, heuristic demonstrations for CPU-feasible training, sampled action trajectories, and actual simulator rollout utility. A final sequential stress suite alternates aligned, weak-tail, hidden-obstacle, duplicate-artifact, diversity-collapse, latency-spike, calibration-drift, missing-utility, and recovery regimes. PushT is simulator evidence for the inference-time law, not real-robot or full visual-policy validation.
 
 \begin{table}[t]
 \caption{Audited full-run evidence. Gains are high-minus-low selected utility unless noted. The trajectory-search claim is conditional: aligned oracle or calibrated tails can help, while misaligned tails can hurt.}
 \label{tab:main-evidence}
 \centering
-\small
-\begin{tabular}{@{}p{0.22\linewidth}p{0.23\linewidth}p{0.22\linewidth}p{0.16\linewidth}@{}}
+\footnotesize
+\begin{tabular}{@{}p{0.16\linewidth}p{0.31\linewidth}p{0.31\linewidth}p{0.11\linewidth}@{}}
 \toprule
 Tier & Positive evidence & Negative/control evidence & Units \\
 \midrule
 Controlled sampler & aligned gain $0.601$, \ci{} low $0.550$ & misaligned change $-0.302$, \ci{} high $-0.248$; low-diversity gain $\approx 0$ & 16 seed/state units \\
-\ats{} & 16 admissions; min utility/tail/latency \lcb{}s $0.833/0.802/0.827$ & false-admit rate $0.0$; 112 \texttt{block\_high\_N} actions & 256 decision rows \\
+Controller & 16 admissions; min utility/tail/latency \lcb{}s $0.833/0.802/0.827$ & false-admit rate $0.0$; 112 \texttt{block\_high\_N} actions & 256 rows \\
+Deployment stress & static \ats{} exceeds fixed high-$N$ by $\AtsDeployStressStaticVsHigh$ overall; harmful rows $+\AtsDeployStressStaticVsHighHarm$ & fixed high-$N$ harmful in $\AtsDeployStressFixedHighHarmRate$ of rows; aligned/recovery cost $\AtsDeployStressStaticAlignedCost$ & \AtsDeployStressRows{} rows \\
 Learned-lite & state gains $0.114$--$0.167$; image gains $0.150$--$0.154$ & supporting tier only; not used for broad visual-policy wording & 3 training seeds \\
 True action diffusion & DDIM oracle gain $0.370$, \ci{} low $0.326$; DDPM oracle gain $0.381$, \ci{} low $0.336$ & anti-correlated change $-0.406$, \ci{} high $-0.371$ & 12 seed/state units \\
-PushT simulator & utility gain $0.121$, \ci{} low $0.0576$; max-coverage gain $0.103$, \ci{} low $0.0381$ & misaligned change $-0.048$, \ci{} high $-0.031$; success gain $0.0$ & 12 seed/episode units \\
+PushT simulator & utility gain $0.121$, \ci{} low $0.0576$; coverage gain $0.103$, \ci{} low $0.0381$ & harmful reranking $-0.048$, \ci{} high $-0.031$; success gain $0.0$ & 12 paired units \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -111,6 +114,24 @@ The controlled sampler confirms the finite law. Selected score rises with $N$ ev
 
 \paragraph{Controller audit.}
 The controller audit includes aligned pools, anti-correlated scorers, shuffled scorers, adversarial-tail and tail-misaligned scorers, duplicated high-score artifacts, correlated candidate pools, hidden OOD dynamics, missing utility, latency spikes, underpowered audits, adaptive stopping, successful calibration, failed repair, and calibration drift. In the full run, \ats{} has 256 decision rows, admits high $N$ in 16 rows, abstains or chooses another action in 240 rows, has zero false admits in harmful negative controls, and records lower-bound coverage $1.0$. Calibration is intentionally asymmetric: 19 held-out repair rows pass and 45 rows fail or remain negative controls.
+
+\paragraph{Sequential deployment stress.}
+We then run \AtsDeployStressRows{} online-style decisions across \AtsDeployStressRegimes{} regimes with fixed low-$N$, fixed high-$N$, oracle high-$N$, static \ats{}, and adaptive \ats{} policies. Fixed high-$N$ is latency-adjusted harmful in \AtsDeployStressFixedHighHarmRate{} of decisions and loses to fixed low-$N$ on harmful rows by \AtsDeployStressFixedHighVsLowHarm{} (\ci{} high \AtsDeployStressFixedHighVsLowHarmCIHigh). Static \ats{} has zero false admits and improves over fixed high-$N$ by \AtsDeployStressStaticVsHigh{} overall (\ci{} low \AtsDeployStressStaticVsHighCILow), by \AtsDeployStressStaticVsHighHarm{} on harmful rows (\ci{} low \AtsDeployStressStaticVsHighHarmCILow), and by \AtsDeployStressStaticVsHighNegative{} on negative regimes (\ci{} low \AtsDeployStressStaticVsHighNegativeCILow). The stress test also exposes a cost: in aligned/recovery regimes, conservative blocking trails fixed high-$N$ by \AtsDeployStressStaticAlignedCost{} (\ci{} high \AtsDeployStressStaticAlignedCostCIHigh). We therefore claim conservative risk control, not free utility.
+
+\begin{figure}[t]
+\centering
+\begin{minipage}{0.49\linewidth}
+\centering
+\includegraphics[width=\linewidth]{figures/deployment_stress_frontier.png}
+\end{minipage}
+\hfill
+\begin{minipage}{0.49\linewidth}
+\centering
+\includegraphics[width=\linewidth]{figures/deployment_stress_actions.png}
+\end{minipage}
+\caption{Sequential deployment stress. Static \ats{} protects harmful rows relative to fixed high-$N$, while the action audit shows the controller's conservative tendency to block, stop, diversify, or request utility audits under shift.}
+\label{fig:deployment-stress}
+\end{figure}
 
 \paragraph{Diffusion-policy tiers.}
 Learned-lite results support the diagnostic pipeline on learned state and small-image denoisers, but they are not used alone for global diffusion-policy wording. The true action diffusion tier is the main learned evidence: both DDIM and stochastic DDPM oracle reranking have positive lower bounds, while anti-correlated scoring is harmful. Runtime is measured directly, with 540 true-diffusion rows spanning $0.18$ to $13.42$ ms per candidate. PushT supplies simulator rollout evidence: aligned oracle reranking improves utility and coverage, low-diversity gains are small, and a high-temperature misaligned scorer is harmful. PushT runtime includes rollout cost and spans $104.78$ to $373.44$ ms per candidate.
@@ -136,7 +157,7 @@ Diffusion models turn iterative denoising into a flexible generative mechanism \
 
 \section{Audit Discipline and Limitations}
 
-All promoted claims must pass the claim audit. The full-run audit reports \texttt{all\_strong=true}, 18 supported claims, no partial or unsupported claims, no full-run low-power warning, true-DDPM and PushT gates supported, negative controls present, runtime evidence present, and no real-robot or full visual-policy overclaim. Main-text numbers in Tables~\ref{tab:main-evidence} and \ref{tab:artifact-map-short} are backed by the appendix artifact map and anonymous supplementary material.
+All promoted claims must pass the claim audit. The full-run audit reports \texttt{all\_strong=true}, 19 supported claims, no partial or unsupported claims, no full-run low-power warning, true-DDPM and PushT gates supported, negative controls present, runtime evidence present, and no real-robot or full visual-policy overclaim. Main-text numbers in Tables~\ref{tab:main-evidence} and \ref{tab:artifact-map-short} are backed by the appendix artifact map and anonymous supplementary material.
 
 The evidence is CPU simulation evidence. The controlled sampler is hand-designed. The learned-lite tier is intentionally small. The image-conditioned path uses $32{\times}32$ toy renderings and a tiny CNN. The true action diffusion tier uses faithful epsilon-prediction DDPM/DDIM action sampling, but on a small toy manipulation dataset. PushT is a simulator benchmark path with low-dimensional observations and heuristic demonstrations. We do not claim real-robot validation, universal Diffusion Policy improvement, hardware safety certification, or full visual PushT imitation-learning validation.
 
@@ -151,6 +172,7 @@ Claim family & Primary tables & Primary figures \\
 \midrule
 Finite law and diversity & \path{controlled_sampler_effect_cis.csv}; \path{controlled_sampler_diversity.csv} & \path{controlled_sampler_curves.png} \\
 Controller and repair & \path{audit_then_sample_decisions.csv}; \path{audit_then_sample_calibration.csv} & \path{audit_then_sample_decision_regions.png} \\
+Deployment stress & \path{deployment_stress_decisions.csv}; \path{deployment_stress_policy_effect_cis.csv} & \path{deployment_stress_frontier.png}; \path{deployment_stress_actions.png} \\
 Runtime & \path{nk_budget_latency_effect_ci.csv}; \path{true_diffusion_runtime.csv}; \path{pusht_runtime.csv} & \path{nk_budget_phase_diagram.png}; \path{true_diffusion_runtime.png} \\
 True DDPM/DDIM and PushT & \path{true_diffusion_effect_cis.csv}; \path{pusht_rollout_metric_effect_cis.csv} & \path{true_diffusion_survival.png}; \path{pusht_max_selection.png} \\
 \bottomrule

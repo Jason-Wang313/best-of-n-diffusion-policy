@@ -13,7 +13,7 @@ Conditional on this event and uniform tie-breaking inside the group, the selecte
 
 \ats{} uses one-sided lower-bound gates for admission. The full run uses candidate-pool diagnostics from \texttt{results/tables/audit\_then\_sample\_decisions.csv} and repair diagnostics from \texttt{results/tables/audit\_then\_sample\_calibration.csv}. An \texttt{increase\_N} decision is admitted only when the diversity gate passes, the high-minus-low utility lower bound is positive, the top-score-tail utility lower bound is positive, the latency-adjusted gain lower bound is positive, and the high-score-tail harm upper bound does not indicate plausible harm. Missing utility routes to \texttt{audit\_rollouts} or \texttt{calibrate\_scorer}; collapsed diversity routes to \texttt{increase\_diversity}; anti-alignment routes to \texttt{block\_high\_N}; and finite latency optima route to \texttt{stop\_early} or \texttt{reduce\_K}.
 
-\begin{table}[h]
+\begin{table}[H]
 \caption{Controller audit summary from the full run.}
 \label{tab:controller-full}
 \centering
@@ -37,7 +37,7 @@ Calibration success / failure rows & 19 / 45 \\
 \section{Experiment Configuration}
 \label{app:configs}
 
-\begin{table}[h]
+\begin{table}[H]
 \caption{Primary experimental configurations.}
 \label{tab:configs}
 \centering
@@ -48,6 +48,7 @@ Tier & Configuration \\
 \midrule
 Controlled sampler & Sixteen seed/state units; high-diversity aligned and misaligned regimes; low-diversity and collapsed regimes; $N$ grid up to 64; exact finite-pool curves and paired confidence intervals. \\
 \ats{} audit & Aligned, anti-correlated, shuffled, adversarial-tail, tail-misaligned, duplicated-artifact, correlated-pool, hidden-OOD, missing-utility, latency-spike, underpowered, adaptive-stopping, repair-success, repair-failure, and calibration-drift regimes. \\
+Deployment stress & Four seeds, five episodes per regime, nine sequential regimes, 96 candidates, $K\in\{2,8,16\}$, fixed low-$N$, fixed high-$N$, oracle high-$N$, static \ats{}, and adaptive \ats{} policy comparisons. \\
 Learned-lite & Three training seeds; state-conditioned MLP denoiser and $32{\times}32$ image-conditioned tiny-CNN denoiser; action horizons; ID and OOD regimes; receding-horizon evaluation. \\
 True action diffusion & Four training seeds and three evaluation states, giving 12 paired seed/state units for key confidence rows; epsilon-prediction DDPM objective; DDIM, stochastic DDPM, one-step consistency-style, and clean-target ablation samplers. \\
 PushT simulator & Four training seeds and three evaluation episodes, giving 12 paired seed/episode units; horizon 20; 16 candidates; $K\in\{1,8,16\}$; aligned, low-diversity, and high-temperature misaligned regimes; actual simulator rollout utility and coverage metrics. \\
@@ -60,7 +61,7 @@ PushT simulator & Four training seeds and three evaluation episodes, giving 12 p
 
 The package uses repo-relative paths only. The anonymous supplement contains the same source and result artifacts without author-identifying links.
 
-\begin{table}[h]
+\begin{table}[H]
 \caption{Artifact map for the main evidence stack.}
 \label{tab:artifact-map-full}
 \centering
@@ -69,19 +70,20 @@ The package uses repo-relative paths only. The anonymous supplement contains the
 \toprule
 Family & Tables and summaries & Figures \\
 \midrule
-Claim audit & \path{results/claims_status.json}; \path{results/ideal_metrics_status.json}; \path{results/claims_status.md}; \path{results/ideal_metrics_status.md} & none \\
-Controlled sampler & \path{controlled_sampler_curves.csv}; \path{controlled_sampler_effect_cis.csv}; \path{controlled_sampler_diversity.csv}; \path{controlled_sampler_summary.json} & \path{controlled_sampler_curves.png} \\
-Controller & \path{audit_then_sample_decisions.csv}; \path{audit_then_sample_calibration.csv}; \path{audit_then_sample_summary.json} & \path{audit_then_sample_decision_regions.png} \\
-Scorers and repair & \path{scorer_comparison_curves.csv}; \path{scorer_comparison_effect_cis.csv}; \path{calibration_repair_map.csv}; \path{scorer_comparison_summary.json} & \path{scorer_comparison.png} \\
-Latency & \path{nk_budget_phase.csv}; \path{nk_budget_latency_effect_ci.csv}; \path{true_diffusion_runtime.csv}; \path{pusht_runtime.csv} & \path{nk_budget_phase_diagram.png}; \path{true_diffusion_runtime.png} \\
-Learned-lite & \path{learned_policy_lite_training.csv}; \path{learned_policy_lite_effect_cis.csv}; \path{learned_policy_lite_receding_horizon.csv}; \path{learned_policy_lite_summary.json} & \path{learned_policy_lite_ood.png}; \path{toy_image_observations.png} \\
-True DDPM/DDIM & \path{true_diffusion_curves.csv}; \path{true_diffusion_effect_cis.csv}; \path{true_diffusion_sampler_comparison.csv}; \path{true_diffusion_summary.json} & \path{true_diffusion_survival.png}; \path{true_diffusion_sampler_comparison.png} \\
-PushT & \path{pusht_curves.csv}; \path{pusht_rollouts.csv}; \path{pusht_rollout_metric_effect_cis.csv}; \path{pusht_rollout_metric_seed_aggregate.csv}; \path{pusht_summary.json} & \path{pusht_max_selection.png} \\
+Claim audit & \path{claims_status.*}; \path{ideal_metrics_status.*} & none \\
+Controlled sampler & \path{controlled_sampler_summary.json}; curves, diversity, and effect-CI CSVs & \path{controlled_sampler_curves.png} \\
+Controller & \path{audit_then_sample_summary.json}; decision and calibration CSVs & \path{audit_then_sample_decision_regions.png} \\
+Deployment stress & \path{deployment_stress_summary.json}; decision, policy, and effect-CI CSVs & \path{deployment_stress_frontier.png}; \path{deployment_stress_actions.png} \\
+Scorers and repair & \path{scorer_comparison_summary.json}; curves, effect-CI, and repair-map CSVs & \path{scorer_comparison.png} \\
+Latency & \path{nk_budget_summary.json}; phase, latency-CI, and runtime CSVs & \path{nk_budget_phase_diagram.png}; \path{true_diffusion_runtime.png} \\
+Learned-lite & \path{learned_policy_lite_summary.json}; training, effect-CI, and receding-horizon CSVs & \path{learned_policy_lite_ood.png}; \path{toy_image_observations.png} \\
+True DDPM/DDIM & \path{true_diffusion_summary.json}; curves, effect-CI, runtime, and sampler-comparison CSVs & \path{true_diffusion_survival.png}; \path{true_diffusion_sampler_comparison.png} \\
+PushT & \path{pusht_summary.json}; curves, rollout, rollout-metric, and runtime CSVs & \path{pusht_max_selection.png} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\begin{table}[h]
+\begin{table}[H]
 \caption{Claim audit ledger. All promoted claims are supported in the full run.}
 \label{tab:claim-ledger}
 \centering
@@ -94,11 +96,12 @@ ID & Claim family & Status \\
 2--4 & High $N$ can help aligned selection, hurt or saturate under misalignment, and saturate under low diversity. & Supported \\
 5--7 & $N$ versus $K$ tradeoff, latency-adjusted finite optima, and at least one calibrated repair regime. & Supported \\
 8 & \ats{} chooses among increase, stop, repair, diversity, reduce-$K$, audit, and block actions with no harmful false admits. & Supported \\
-9--11 & Differentiation from adjacent projects and artifact-backed claim discipline. & Supported \\
-12 & Learned diffusion-policy-lite validity checklist and multi-seed state/image evaluation. & Supported \\
-13 & True epsilon-prediction action DDPM/DDIM effects survive with one-step and clean-target ablations. & Supported \\
-14--15 & PushT simulator reranking law, rollout coverage, and success curves over actual simulator rollouts. & Supported \\
-16--18 & Runtime-backed recommendations, global wording gated on true-DDPM plus PushT, and reviewer-skepticism checklist. & Supported \\
+9 & Sequential deployment stress has zero false admits and quantifies conservative opportunity cost. & Supported \\
+10--12 & Differentiation from adjacent projects and artifact-backed claim discipline. & Supported \\
+13 & Learned diffusion-policy-lite validity checklist and multi-seed state/image evaluation. & Supported \\
+14 & True epsilon-prediction action DDPM/DDIM effects survive with one-step and clean-target ablations. & Supported \\
+15--16 & PushT simulator reranking law, rollout coverage, and success curves over actual simulator rollouts. & Supported \\
+17--19 & Runtime-backed recommendations, global wording gated on true-DDPM plus PushT, and reviewer-skepticism checklist. & Supported \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -106,7 +109,7 @@ ID & Claim family & Status \\
 \section{Reviewer Concern Matrix}
 \label{app:concerns}
 
-\begin{table}[h]
+\begin{table}[H]
 \caption{Pre-registered concern-to-evidence mapping.}
 \label{tab:concerns}
 \centering
@@ -117,7 +120,8 @@ Concern & Paper answer & Direct artifact \\
 \midrule
 High $N$ helps everywhere. & Misaligned controlled, true-diffusion, and PushT scorers expose harmful high-$N$ selection. & \path{results/claims_status.md}, Claims 3, 13, 14 \\
 The controller admits unsafe high $N$. & Harmful negative controls have zero false admits; admitted rows have positive utility, tail, and latency lower bounds. & \path{audit_then_sample_summary.json}; \path{audit_then_sample_decisions.csv} \\
-This is only a toy sampler. & Global wording requires true-DDPM and PushT rollout-metric gates; learned-lite and controlled tiers are supporting context. & \path{ideal_metrics_status.json}, Claims 13--18 \\
+The controller is too conservative. & Deployment stress reports both protection and cost: zero false admits and positive harmful-row gains, but aligned/recovery rows trail fixed high-$N$. & \path{deployment_stress_policy_effect_cis.csv}, Claim 9 \\
+This is only a toy sampler. & Global wording requires true-DDPM and PushT rollout-metric gates; learned-lite and controlled tiers are supporting context. & \path{ideal_metrics_status.json}, Claims 13--19 \\
 Runtime is ignored. & Budget sweeps and measured true-diffusion/PushT runtimes are audited. & \path{nk_budget_latency_effect_ci.csv}; runtime CSVs \\
 Repair always works. & Calibration has both success and failure rows; repair is used only under held-out lower-bound gates. & \path{audit_then_sample_calibration.csv} \\
 Robot validity is overstated. & Scope excludes real robots, hardware safety, production visual policies, and full visual PushT validation. & \path{paper/limitations.md}; \path{ideal_metrics_status.json} \\
@@ -132,6 +136,7 @@ From the repository root:
 \begin{verbatim}
 python scripts/build_iclr_paper.py
 bash scripts/run_claim_audit.sh
+python scripts/run_with_src.py experiments/deployment_stress.py
 python -m pytest -q
 rg -n "F(?:INAL RERUN)" paper docs README.md
 rg -n "T(?:ODO)|placehold(?:er)" paper docs README.md
@@ -139,7 +144,7 @@ rg -n "almost\s+100|100[%]" paper docs README.md
 rg -n "validated on real robot[s]" paper docs README.md
 rg -n "trajectory search always help[s]" paper docs README.md
 \end{verbatim}
-The paper PDF is written to \texttt{paper/iclr/main.pdf}. The build wrapper compiles with the official ICLR 2026 style proxy and fails if the page label immediately before references exceeds nine pages.
+The paper PDF is written to \texttt{paper/iclr/main.pdf} and copied to \texttt{paper/iclr/final/best of n diffusion policy-v3.pdf}. The build wrapper compiles with the official ICLR 2026 style proxy and fails if the page label immediately before references exceeds nine pages.
 
 \section{LLM Usage Details}
 \label{app:llm}

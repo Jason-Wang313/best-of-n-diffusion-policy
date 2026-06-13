@@ -173,11 +173,15 @@ def main() -> None:
     learned = load_json("learned_policy_lite_summary.json")
     true_diffusion = load_json("true_diffusion_summary.json")
     pusht = load_json("pusht_summary.json")
+    deployment_stress = load_json("deployment_stress_summary.json")
     controlled_agg = csv_rows(RESULTS / "tables" / "controlled_sampler_aggregate.csv")
     controlled_div = csv_rows(RESULTS / "tables" / "controlled_sampler_diversity.csv")
     controlled_effect_cis = csv_rows(RESULTS / "tables" / "controlled_sampler_effect_cis.csv")
     controller_decisions = csv_rows(RESULTS / "tables" / "audit_then_sample_decisions.csv")
     controller_calibration = csv_rows(RESULTS / "tables" / "audit_then_sample_calibration.csv")
+    deployment_decisions = csv_rows(RESULTS / "tables" / "deployment_stress_decisions.csv")
+    deployment_policy_rows = csv_rows(RESULTS / "tables" / "deployment_stress_policy_rows.csv")
+    deployment_effect_cis = csv_rows(RESULTS / "tables" / "deployment_stress_policy_effect_cis.csv")
     scorer_agg = csv_rows(RESULTS / "tables" / "scorer_comparison_aggregate.csv")
     scorer_effect_cis = csv_rows(RESULTS / "tables" / "scorer_comparison_effect_cis.csv")
     calibration_map = csv_rows(RESULTS / "tables" / "calibration_repair_map.csv")
@@ -706,6 +710,84 @@ def main() -> None:
         strong_metrics["audit_then_sample_controller"],
     )
 
+    def effect_ci(effect: str, subset: str) -> dict[str, str]:
+        return first_row(deployment_effect_cis, effect=effect, subset=subset)
+
+    deployment_action_set = {row.get("adaptive_action") for row in deployment_decisions}
+    deployment_decision_columns = csv_columns(RESULTS / "tables" / "deployment_stress_decisions.csv")
+    deployment_policy_columns = csv_columns(RESULTS / "tables" / "deployment_stress_policy_rows.csv")
+    deployment_effect_columns = csv_columns(RESULTS / "tables" / "deployment_stress_policy_effect_cis.csv")
+    required_deployment_columns = {
+        "regime",
+        "harmful_high_N",
+        "static_action",
+        "adaptive_action",
+        "static_false_admit",
+        "adaptive_false_admit",
+        "fixed_high_minus_low_latency_adjusted",
+    }
+    static_vs_high_all = effect_ci("audit_then_sample_minus_fixed_high_N", "all")
+    static_vs_high_harm = effect_ci("audit_then_sample_minus_fixed_high_N", "harmful_high_N")
+    static_vs_high_negative = effect_ci("audit_then_sample_minus_fixed_high_N", "negative_regimes")
+    adaptive_vs_high_harm = effect_ci("adaptive_ats_minus_fixed_high_N", "harmful_high_N")
+    fixed_high_vs_low_harm = effect_ci("fixed_high_N_minus_fixed_low_N", "harmful_high_N")
+    static_aligned_cost = effect_ci("audit_then_sample_minus_fixed_high_N", "aligned_recovery")
+    deployment_weak = (
+        bool(deployment_stress)
+        and len(deployment_decisions) >= (27 if is_smoke_results() else 90)
+        and len(deployment_policy_rows) >= (135 if is_smoke_results() else 450)
+        and len(deployment_effect_cis) >= 12
+        and required_deployment_columns.issubset(deployment_decision_columns)
+        and {"policy", "latency_adjusted_utility", "runtime_ms", "N", "K"}.issubset(deployment_policy_columns)
+        and {"subset", "effect", "mean", "ci_low", "ci_high", "n"}.issubset(deployment_effect_columns)
+    )
+    deployment_strong = (
+        deployment_weak
+        and int(f(deployment_stress, "regime_count", 0.0)) >= 9
+        and int(f(deployment_stress, "harmful_high_n_rows", 0.0)) >= (10 if is_smoke_results() else 60)
+        and f(deployment_stress, "static_false_admit_rate") == 0.0
+        and f(deployment_stress, "adaptive_false_admit_rate") == 0.0
+        and f(deployment_stress, "fixed_high_harm_rate") >= 0.30
+        and {"audit_rollouts", "block_high_N", "increase_diversity", "stop_early"}.issubset(deployment_action_set)
+        and ci_ok(static_vs_high_all, low_min=0.0, min_n=20 if is_smoke_results() else 90)
+        and ci_ok(static_vs_high_harm, mean_min=0.25, low_min=0.20, min_n=10 if is_smoke_results() else 60)
+        and ci_ok(static_vs_high_negative, mean_min=0.10, low_min=0.05, min_n=10 if is_smoke_results() else 60)
+        and ci_ok(adaptive_vs_high_harm, mean_min=0.25, low_min=0.20, min_n=10 if is_smoke_results() else 60)
+        and ci_ok(fixed_high_vs_low_harm, mean_max=-0.20, high_max=-0.10, min_n=10 if is_smoke_results() else 60)
+        and ci_ok(static_aligned_cost, mean_max=-0.20, high_max=-0.15, min_n=5 if is_smoke_results() else 30)
+        and (RESULTS / "figures" / "deployment_stress_frontier.png").exists()
+        and (RESULTS / "figures" / "deployment_stress_actions.png").exists()
+    )
+    strong_metrics["deployment_stress"] = {
+        "summary": deployment_stress,
+        "decision_rows": len(deployment_decisions),
+        "policy_rows": len(deployment_policy_rows),
+        "effect_rows": len(deployment_effect_cis),
+        "action_set": sorted(x for x in deployment_action_set if x),
+        "static_vs_high_all": static_vs_high_all,
+        "static_vs_high_harm": static_vs_high_harm,
+        "static_vs_high_negative": static_vs_high_negative,
+        "adaptive_vs_high_harm": adaptive_vs_high_harm,
+        "fixed_high_vs_low_harm": fixed_high_vs_low_harm,
+        "static_aligned_cost": static_aligned_cost,
+        "thresholds": {
+            "regime_count_min": 9,
+            "harmful_rows_min": 10 if is_smoke_results() else 60,
+            "false_admit_rate_max": 0.0,
+            "fixed_high_harm_rate_min": 0.30,
+            "static_vs_high_all_ci_low_min": 0.0,
+            "static_vs_high_harm_ci_low_min": 0.20,
+            "static_aligned_cost_ci_high_max": -0.15,
+        },
+    }
+    add(
+        claims,
+        "deployment_stress",
+        "Sequential deployment stress shows zero false admits and exposes the utility cost of conservative high-N blocking.",
+        status(deployment_strong, deployment_weak),
+        strong_metrics["deployment_stress"],
+    )
+
     not_wam_ok = (
         "what theorem is reused" in diff_doc
         and "diffusion tail over-selection" in diff_doc
@@ -746,6 +828,10 @@ def main() -> None:
         RESULTS / "tables" / "controlled_sampler_effect_cis.csv",
         RESULTS / "tables" / "audit_then_sample_decisions.csv",
         RESULTS / "tables" / "audit_then_sample_calibration.csv",
+        RESULTS / "deployment_stress_summary.json",
+        RESULTS / "tables" / "deployment_stress_decisions.csv",
+        RESULTS / "tables" / "deployment_stress_policy_rows.csv",
+        RESULTS / "tables" / "deployment_stress_policy_effect_cis.csv",
         RESULTS / "tables" / "scorer_comparison_aggregate.csv",
         RESULTS / "tables" / "scorer_comparison_seed_aggregate.csv",
         RESULTS / "tables" / "scorer_comparison_effect_cis.csv",
@@ -776,6 +862,8 @@ def main() -> None:
         RESULTS / "tables" / "pusht_rollout_metric_effect_cis.csv",
         RESULTS / "figures" / "nk_budget_phase_diagram.png",
         RESULTS / "figures" / "audit_then_sample_decision_regions.png",
+        RESULTS / "figures" / "deployment_stress_frontier.png",
+        RESULTS / "figures" / "deployment_stress_actions.png",
         RESULTS / "figures" / "true_diffusion_survival.png",
         RESULTS / "figures" / "true_diffusion_runtime.png",
         RESULTS / "figures" / "true_diffusion_sampler_comparison.png",
@@ -785,6 +873,9 @@ def main() -> None:
         "controlled_sampler_aggregate.csv": 42,
         "audit_then_sample_decisions.csv": 20 if is_smoke_results() else 80,
         "audit_then_sample_calibration.csv": 4 if is_smoke_results() else 20,
+        "deployment_stress_decisions.csv": 27 if is_smoke_results() else 90,
+        "deployment_stress_policy_rows.csv": 135 if is_smoke_results() else 450,
+        "deployment_stress_policy_effect_cis.csv": 12,
         "scorer_comparison_aggregate.csv": 49,
         "nk_budget_phase.csv": 30,
         "learned_policy_lite_aggregate.csv": 200,
@@ -806,6 +897,8 @@ def main() -> None:
         for name in [
             "controlled_sampler_curves.png",
             "audit_then_sample_decision_regions.png",
+            "deployment_stress_frontier.png",
+            "deployment_stress_actions.png",
             "scorer_comparison.png",
             "nk_budget_phase_diagram.png",
             "learned_policy_lite_ood.png",

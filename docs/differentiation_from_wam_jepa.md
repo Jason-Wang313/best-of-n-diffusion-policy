@@ -35,6 +35,7 @@ The repository must include:
 - one lightweight robotics simulator benchmark path with actual sampled-trajectory rollout utility;
 - scorer/reranker comparison showing that the value of `N` depends on score-utility alignment;
 - `N` versus `K` phase diagram with latency-adjusted real utility;
+- sequential deployment stress with false-admit accounting, fixed low/high/oracle baselines, static and adaptive Audit-Then-Sample policies, and explicit opportunity-cost reporting under aligned recovery;
 - claim audit that checks the above artifacts.
 
 ## What Would Make This Project Fail As A Clone
