@@ -1,0 +1,3 @@
+n,mean,se,ci_low,ci_high,confidence,effect,sampler,regime,K,N
+12,0.05708110821673445,0.015723543869027502,0.030158454592918715,0.08688713256176794,0.95,oracle_real_utility_selector_minus_anti_oracle_negative_control,ddim_eps,fetch_high_temp_misaligned,8,8
+12,0.05625174165318698,0.01566152364202767,0.030223233294531488,0.08608811225791742,0.95,learned_value_critic_from_pilot_rollouts_minus_anti_oracle_negative_control,ddim_eps,fetch_high_temp_misaligned,8,8

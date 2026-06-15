@@ -8,9 +8,9 @@ Target: ICLR 2027 initial submission package. As of 2026-06-09, no official ICLR
 - Style proxy: official `iclr2026_conference.sty` and `iclr2026_conference.bst`.
 - Figures: copied from audited `results/figures/*.png` into `paper/iclr/figures/`.
 - Command: `python scripts/build_iclr_paper.py`.
-- Output: `paper/iclr/main.pdf` and `paper/iclr/final/best of n diffusion policy-v3.pdf`.
+- Output: `paper/iclr/main.pdf` and `paper/iclr/final/best of n diffusion policy-v4.pdf`.
 - Page-count gate: the build script reads the `maintextend` LaTeX label and fails if the page before references exceeds 9.
-- Observed build on 2026-06-09: main-text label page 5; total PDF pages 9.
+- Observed v4 build must be regenerated after the FetchPush update; the build script enforces the 9-page main-text cap.
 - On this machine, MiKTeX's `latexmk` shim lacks Perl, so the wrapper automatically falls back to `pdflatex`/`bibtex`.
 
 ## Anonymity
@@ -23,10 +23,10 @@ Target: ICLR 2027 initial submission package. As of 2026-06-09, no official ICLR
 
 ## Claims
 
-- The v3 deployment-stress experiment is included and claim-audited.
+- The v4 FetchPush and deployment-stress experiments are included and claim-audited.
 - Main text only promotes claims supported by the full-run audit artifacts.
 - Universal high-`N` improvement, real-robot validation, hardware safety certification, and full visual-policy validation are explicitly excluded.
-- Strong wording is gated on true-DDPM and PushT rollout-metric evidence.
+- Strong wording is gated on true-DDPM, PushT, and FetchPush rollout-metric evidence.
 
 ## Supplement
 

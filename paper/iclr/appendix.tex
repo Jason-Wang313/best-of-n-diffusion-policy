@@ -52,6 +52,7 @@ Deployment stress & Four seeds, five episodes per regime, nine sequential regime
 Learned-lite & Three training seeds; state-conditioned MLP denoiser and $32{\times}32$ image-conditioned tiny-CNN denoiser; action horizons; ID and OOD regimes; receding-horizon evaluation. \\
 True action diffusion & Four training seeds and three evaluation states, giving 12 paired seed/state units for key confidence rows; epsilon-prediction DDPM objective; DDIM, stochastic DDPM, one-step consistency-style, and clean-target ablation samplers. \\
 PushT simulator & Four training seeds and three evaluation episodes, giving 12 paired seed/episode units; horizon 20; 16 candidates; $K\in\{1,8,16\}$; aligned, low-diversity, and high-temperature misaligned regimes; actual simulator rollout utility and coverage metrics. \\
+FetchPush simulator & Four training seeds and three evaluation episodes, giving 12 paired seed/episode units; horizon 14; 8 candidates; $K\in\{1,8\}$; Gymnasium Robotics FetchPush-v4 MuJoCo rollouts; aligned, low-diversity, and high-temperature anti-tail regimes. \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -79,6 +80,7 @@ Latency & \path{nk_budget_summary.json}; phase, latency-CI, and runtime CSVs & \
 Learned-lite & \path{learned_policy_lite_summary.json}; training, effect-CI, and receding-horizon CSVs & \path{learned_policy_lite_ood.png}; \path{toy_image_observations.png} \\
 True DDPM/DDIM & \path{true_diffusion_summary.json}; curves, effect-CI, runtime, and sampler-comparison CSVs & \path{true_diffusion_survival.png}; \path{true_diffusion_sampler_comparison.png} \\
 PushT & \path{pusht_summary.json}; curves, rollout, rollout-metric, and runtime CSVs & \path{pusht_max_selection.png} \\
+FetchPush & \path{fetch_robotics_summary.json}; curves, rollout, rollout-metric, and runtime CSVs & \path{fetch_robotics_selection.png} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -101,7 +103,8 @@ ID & Claim family & Status \\
 13 & Learned diffusion-policy-lite validity checklist and multi-seed state/image evaluation. & Supported \\
 14 & True epsilon-prediction action DDPM/DDIM effects survive with one-step and clean-target ablations. & Supported \\
 15--16 & PushT simulator reranking law, rollout coverage, and success curves over actual simulator rollouts. & Supported \\
-17--19 & Runtime-backed recommendations, global wording gated on true-DDPM plus PushT, and reviewer-skepticism checklist. & Supported \\
+17 & FetchPush-v4 Gymnasium Robotics/MuJoCo rollout bridge over 12 paired units. & Supported \\
+18--20 & Runtime-backed recommendations, global wording gated on true-DDPM plus PushT plus FetchPush, and reviewer-skepticism checklist. & Supported \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -118,13 +121,13 @@ ID & Claim family & Status \\
 \toprule
 Concern & Paper answer & Direct artifact \\
 \midrule
-High $N$ helps everywhere. & Misaligned controlled, true-diffusion, and PushT scorers expose harmful high-$N$ selection. & \path{results/claims_status.md}, Claims 3, 13, 14 \\
+High $N$ helps everywhere. & Misaligned controlled, true-diffusion, PushT, and FetchPush anti-tail controls expose harmful high-$N$ selection. & \path{results/claims_status.md}, Claims 3, 14, 15, 17 \\
 The controller admits unsafe high $N$. & Harmful negative controls have zero false admits; admitted rows have positive utility, tail, and latency lower bounds. & \path{audit_then_sample_summary.json}; \path{audit_then_sample_decisions.csv} \\
 The controller is too conservative. & Deployment stress reports both protection and cost: zero false admits and positive harmful-row gains, but aligned/recovery rows trail fixed high-$N$. & \path{deployment_stress_policy_effect_cis.csv}, Claim 9 \\
-This is only a toy sampler. & Global wording requires true-DDPM and PushT rollout-metric gates; learned-lite and controlled tiers are supporting context. & \path{ideal_metrics_status.json}, Claims 13--19 \\
-Runtime is ignored. & Budget sweeps and measured true-diffusion/PushT runtimes are audited. & \path{nk_budget_latency_effect_ci.csv}; runtime CSVs \\
+This is only a toy sampler. & Global wording requires true-DDPM, PushT, and FetchPush rollout-metric gates; learned-lite and controlled tiers are supporting context. & \path{ideal_metrics_status.json}, Claims 13--20 \\
+Runtime is ignored. & Budget sweeps and measured true-diffusion, PushT, and FetchPush runtimes are audited. & \path{nk_budget_latency_effect_ci.csv}; runtime CSVs \\
 Repair always works. & Calibration has both success and failure rows; repair is used only under held-out lower-bound gates. & \path{audit_then_sample_calibration.csv} \\
-Robot validity is overstated. & Scope excludes real robots, hardware safety, production visual policies, and full visual PushT validation. & \path{paper/limitations.md}; \path{ideal_metrics_status.json} \\
+Robot validity is overstated. & Scope excludes real robots, hardware safety, production visual policies, and full visual benchmark validation. & \path{paper/limitations.md}; \path{ideal_metrics_status.json} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -144,7 +147,7 @@ rg -n "almost\s+100|100[%]" paper docs README.md
 rg -n "validated on real robot[s]" paper docs README.md
 rg -n "trajectory search always help[s]" paper docs README.md
 \end{verbatim}
-The paper PDF is written to \texttt{paper/iclr/main.pdf} and copied to \texttt{paper/iclr/final/best of n diffusion policy-v3.pdf}. The build wrapper compiles with the official ICLR 2026 style proxy and fails if the page label immediately before references exceeds nine pages.
+The paper PDF is written to \texttt{paper/iclr/main.pdf} and copied to \texttt{paper/iclr/final/best of n diffusion policy-v4.pdf}. The build wrapper compiles with the official ICLR 2026 style proxy and fails if the page label immediately before references exceeds nine pages.
 
 \section{LLM Usage Details}
 \label{app:llm}

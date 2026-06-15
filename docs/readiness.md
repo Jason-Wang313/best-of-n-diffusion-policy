@@ -1,8 +1,8 @@
 # Audit Readiness
 
-This repository is ready to make only claims that pass `scripts/run_claim_audit.sh`. The strongest current claim is the tiered inference-time law plus conservative controller: high `N` is admitted only when candidate diversity, upper-tail real utility, and latency-adjusted lower-bound gates pass, and Audit-Then-Sample otherwise abstains, audits rollouts, stops, repairs, increases diversity, reduces `K`, or blocks high-`N` selection in the audited CPU regimes. The v3 deployment-stress suite adds 180 sequential decisions and shows zero false admits, strong protection on harmful high-`N` rows, and an explicitly reported opportunity cost in aligned/recovery rows. Global diffusion-policy wording now depends on the true-DDPM and PushT rollout-metric gates, with toy, controller, deployment-stress, and learned-lite tiers used as diagnostics and supporting context.
+This repository is ready to make only claims that pass `scripts/run_claim_audit.sh`. The strongest current claim is the tiered inference-time law plus conservative controller: high `N` is admitted only when candidate diversity, upper-tail real utility, and latency-adjusted lower-bound gates pass, and Audit-Then-Sample otherwise abstains, audits rollouts, stops, repairs, increases diversity, reduces `K`, or blocks high-`N` selection in the audited CPU regimes. The v4 package adds 180 sequential deployment-stress decisions and a second standard robotics bridge: Gymnasium Robotics FetchPush-v4/MuJoCo rollouts. Global diffusion-policy wording now depends on the true-DDPM, PushT, and FetchPush rollout-metric gates, with toy, controller, deployment-stress, and learned-lite tiers used as diagnostics and supporting context.
 
-The weakest remaining claim is external validity beyond CPU simulation: the repo now includes true epsilon-prediction action diffusion and a PushT simulator path, but it still does not establish real-robot performance, production-scale visual manipulation quality, or universal high-`N` improvement.
+The weakest remaining claim is external validity beyond CPU simulation: the repo now includes true epsilon-prediction action diffusion, PushT, and FetchPush simulator paths, but it still does not establish real-robot performance, production-scale visual manipulation quality, or universal high-`N` improvement.
 
 ## Artifact Inventory
 
@@ -15,6 +15,7 @@ Core summaries:
 - `results/learned_policy_lite_summary.json`
 - `results/true_diffusion_summary.json`
 - `results/pusht_summary.json`
+- `results/fetch_robotics_summary.json`
 - `results/deployment_stress_summary.json`
 - `results/ideal_metrics_status.json`
 
@@ -51,6 +52,14 @@ Primary tables:
 - `results/tables/pusht_rollout_metric_seed_aggregate.csv`
 - `results/tables/pusht_rollout_metric_aggregate.csv`
 - `results/tables/pusht_rollout_metric_effect_cis.csv`
+- `results/tables/fetch_robotics_curves.csv`
+- `results/tables/fetch_robotics_seed_aggregate.csv`
+- `results/tables/fetch_robotics_effect_cis.csv`
+- `results/tables/fetch_robotics_runtime.csv`
+- `results/tables/fetch_robotics_rollouts.csv`
+- `results/tables/fetch_robotics_rollout_metric_seed_aggregate.csv`
+- `results/tables/fetch_robotics_rollout_metric_aggregate.csv`
+- `results/tables/fetch_robotics_rollout_metric_effect_cis.csv`
 
 Primary figures:
 
@@ -66,7 +75,8 @@ Primary figures:
 - `results/figures/true_diffusion_runtime.png`
 - `results/figures/true_diffusion_sampler_comparison.png`
 - `results/figures/pusht_max_selection.png`
+- `results/figures/fetch_robotics_selection.png`
 
 ## Scope
 
-All acceptance runs are CPU-only by default. The image-conditioned model uses 32x32 toy renderings and a tiny CNN encoder. PushT is the single lightweight simulator benchmark path and uses low-dimensional observations plus heuristic demonstrations for training. The full run is configured for 12 paired seed-state or seed-episode CI units in the true-DDPM and PushT tiers, plus 180 deployment-stress decision rows. Robot hardware, GPU-scale vision training, and real-world deployment validation are out of scope.
+All acceptance runs are CPU-only by default. The image-conditioned model uses 32x32 toy renderings and a tiny CNN encoder. PushT and FetchPush are lightweight simulator benchmark paths and use low-dimensional observations plus heuristic demonstrations for training. The full run is configured for 12 paired seed-state or seed-episode CI units in the true-DDPM, PushT, and FetchPush tiers, plus 180 deployment-stress decision rows. Robot hardware, GPU-scale vision training, and real-world deployment validation are out of scope.

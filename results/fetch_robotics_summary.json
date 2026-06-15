@@ -1,0 +1,79 @@
+{
+  "actual_simulator_rollouts": true,
+  "artifact_tables": {
+    "aggregate": "results/tables/fetch_robotics_aggregate.csv",
+    "curves": "results/tables/fetch_robotics_curves.csv",
+    "diversity": "results/tables/fetch_robotics_diversity.csv",
+    "effect_cis": "results/tables/fetch_robotics_effect_cis.csv",
+    "rollout_metric_aggregate": "results/tables/fetch_robotics_rollout_metric_aggregate.csv",
+    "rollout_metric_effect_cis": "results/tables/fetch_robotics_rollout_metric_effect_cis.csv",
+    "rollout_metric_seed_aggregate": "results/tables/fetch_robotics_rollout_metric_seed_aggregate.csv",
+    "rollouts": "results/tables/fetch_robotics_rollouts.csv",
+    "runtime": "results/tables/fetch_robotics_runtime.csv",
+    "scorer_gap_cis": "results/tables/fetch_robotics_scorer_gap_cis.csv",
+    "seed_aggregate": "results/tables/fetch_robotics_seed_aggregate.csv",
+    "training": "results/tables/fetch_robotics_training.csv"
+  },
+  "benchmark": "Gymnasium Robotics FetchPush",
+  "curve_rows": 4608,
+  "ddim_fast_sampling": true,
+  "env_id": "FetchPush-v4",
+  "fetch_aligned_oracle_gain_high_minus_low": 0.00689897911953298,
+  "fetch_aligned_progress_gain_high_minus_low": 0.0,
+  "fetch_aligned_success_gain_high_minus_low": 0.0,
+  "fetch_anti_oracle_real_change_high_minus_low": -0.0314416426327535,
+  "fetch_low_diversity_oracle_gain_high_minus_low": 0.00031714581423457973,
+  "fetch_misaligned_real_change_high_minus_low": 0.001243254396668697,
+  "fetch_oracle_minus_anti_oracle_high_n": 0.057081108216734455,
+  "k_values": [
+    1,
+    8
+  ],
+  "loss_decreased_all_seeds": true,
+  "max_loss_ratio": 0.9963892005738801,
+  "measured_wall_clock_runtime": true,
+  "n_values": [
+    1,
+    2,
+    4,
+    8
+  ],
+  "num_training_seeds": 4,
+  "paired_units": 12,
+  "regimes": [
+    "fetch_aligned",
+    "fetch_high_temp_misaligned",
+    "fetch_low_diversity"
+  ],
+  "rollout_metric_columns": [
+    "exact_selected_normalized_progress",
+    "exact_selected_final_progress",
+    "exact_selected_success",
+    "exact_selected_negative_final_distance"
+  ],
+  "rollout_metric_effect_rows": 384,
+  "rollout_metric_seed_rows": 1536,
+  "rollout_rows": 1152,
+  "runtime_per_candidate_ms_max": 775.2815499989083,
+  "runtime_per_candidate_ms_min": 117.3262250085827,
+  "runtime_rows": 144,
+  "sampler_families": [
+    "consistency_1step",
+    "ddim_eps",
+    "ddpm_eps"
+  ],
+  "scorers": [
+    "anti_oracle_negative_control",
+    "diffusion_internal_score",
+    "goal_progress_heuristic",
+    "learned_value_critic_from_pilot_rollouts",
+    "misaligned_speed_scorer",
+    "oracle_real_utility_selector",
+    "random_sample_selection",
+    "uncertainty_aware_critic"
+  ],
+  "standard_robotics_environment": true,
+  "stochastic_ddpm_sampling": true,
+  "trajectory_reranking_over_sampled_actions": true,
+  "true_epsilon_prediction": true
+}

@@ -57,3 +57,20 @@ Full-run evidence: DDIM oracle high-minus-low selected-real gain is `0.370` with
 The PushT path uses `gym_pusht/PushT-v0` with actual simulator rollout utility for sampled action trajectories. Training demonstrations are heuristic and CPU-friendly; the claim is benchmark-path evidence for the reranking law, not full-scale visual Diffusion Policy validation. Regimes include aligned sampling, low-diversity sampling, and high-temperature misaligned-score failure. The full run uses four seeds, three evaluation episodes, horizon 20, 16 candidates, and `K = 1, 8, 16`, then reports selected utility, max coverage, final coverage, success, seed-level summaries, and runtime.
 
 Full-run evidence: aligned PushT oracle selected-utility gain is `0.121` with CI low `0.0576`; selected max-coverage gain is `0.103` with CI low `0.0381`; selected final-coverage gain is `0.0216` with CI low `0.00099`; selected success gain is `0.0`. The artifact contains 2,880 simulator rollout rows, 2,100 rollout-metric seed rows, 315 rollout-metric effect rows, and 180 runtime rows.
+
+## Family G: FetchPush Robotics Benchmark
+
+The FetchPush path uses `FetchPush-v4` from Gymnasium Robotics/MuJoCo with actual simulator rollout utility for sampled action trajectories. Training demonstrations are heuristic and CPU-friendly; the claim is a second standard robotics benchmark bridge for the reranking law, not full-scale visual Diffusion Policy validation. Regimes include aligned sampling, low-diversity sampling, and high-temperature anti-tail failure.
+
+Full-run configuration: four seeds, three evaluation episodes, horizon 14, 8 candidates, and `K = 1, 8`, producing 12 paired seed-episode units for key CI rows. Metrics include selected utility, best-distance progress, final progress, success, seed-level summaries, and measured runtime.
+
+Primary artifacts:
+
+- `results/tables/fetch_robotics_curves.csv`;
+- `results/tables/fetch_robotics_rollouts.csv`;
+- `results/tables/fetch_robotics_rollout_metric_effect_cis.csv`;
+- `results/tables/fetch_robotics_rollout_metric_seed_aggregate.csv`;
+- `results/tables/fetch_robotics_runtime.csv`;
+- `results/figures/fetch_robotics_selection.png`.
+
+Full-run evidence: aligned FetchPush oracle selected-utility gain is `0.00690` with CI low `0.00594`; low-diversity gain is `0.000317`; anti-oracle selected-utility change is `-0.0314` with CI high `-0.0162`; the high-`N` oracle-minus-anti-oracle gap is `0.0571` with CI low `0.0302`. The artifact contains 1,152 simulator rollout rows, 1,536 rollout-metric seed rows, 384 rollout-metric effect rows, and 144 runtime rows.

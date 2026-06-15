@@ -4,7 +4,7 @@
 
 Diffusion action policies can generate many candidate trajectories for the same observation, making trajectory-search inference an attractive test-time tool. This paper asks when that extra sampling is actually worth using and what to do when it is not. We study a finite setting in which an observation-conditioned generator proposes action trajectories, a scorer or reranker selects the top candidate, and performance is measured by task utility after optional latency cost. The central result is not that larger `N` always helps. max-over-`N` obeys measurable selection laws, and high-`N` sampling is useful only when the audited candidate pool supports it: Audit-Then-Sample admits extra diffusion trajectories only when conservative lower-bound gates pass and otherwise abstains, audits, repairs, stops early, increases diversity, reduces `K`, or blocks high-`N` selection.
 
-We combine a tie-aware finite trajectory-selection law with diagnostics for diversity, upper-tail alignment, latency-adjusted utility, confidence-bound gates, and an inference-time repair path. The evidence is CPU-simulation evidence: controlled action samplers isolate mechanisms, a learned Diffusion Policy-lite tier checks the pipeline on learned state and tiny-image denoisers, a true epsilon-prediction action DDPM/DDIM tier tests faithful diffusion sampling, and a PushT simulator tier evaluates actual rollout utility, coverage, success, and runtime. We characterize, diagnose, control, and repair inference-time selection behavior within this scope; we do not claim real-robot validation, universal high-`N` improvement, or full visual-policy validation.
+We combine a tie-aware finite trajectory-selection law with diagnostics for diversity, upper-tail alignment, latency-adjusted utility, confidence-bound gates, and an inference-time repair path. The evidence is CPU-simulation evidence: controlled action samplers isolate mechanisms, a learned Diffusion Policy-lite tier checks the pipeline on learned state and tiny-image denoisers, a true epsilon-prediction action DDPM/DDIM tier tests faithful diffusion sampling, and PushT plus FetchPush simulator tiers evaluate actual rollout utility, coverage or progress, success, and runtime. We characterize, diagnose, control, and repair inference-time selection behavior within this scope; we do not claim real-robot validation, universal high-`N` improvement, or full visual-policy validation.
 
 ## 1. Introduction
 
@@ -26,11 +26,11 @@ The intended contribution is a diagnose-predict-fix framework, not a new robot b
 
 1. We give a finite, tie-aware trajectory-selection law for action-trajectory pools, separating selected-score improvement from selected real-utility improvement.
 2. We build Audit-Then-Sample, a conservative inference-time controller that certifies `increase_N` only under diversity, tail-utility, utility-gain, and latency-adjusted lower-bound gates, and otherwise abstains or recommends a repair action.
-3. We test the mechanism beyond controlled samplers with learned Diffusion Policy-lite, true epsilon-prediction DDPM/DDIM action sampling, and a PushT simulator path with actual rollout utility, coverage, success, and runtime.
+3. We test the mechanism beyond controlled samplers with learned Diffusion Policy-lite, true epsilon-prediction DDPM/DDIM action sampling, and PushT plus FetchPush simulator paths with actual rollout utility, coverage or progress, success, and runtime.
 4. We provide an audit infrastructure that maps headline claims to CSV/JSON artifacts, negative controls, confidence intervals, and scope gates.
 
 **Scope and non-claims.**
-The paper claims conditional inference-time evidence under audited CPU simulation regimes. It does not claim real-robot validation, universal high-`N` improvement, production-scale visual Diffusion Policy performance, or that calibration always repairs a bad scorer. The PushT path is simulator evidence from low-dimensional observations and heuristic demonstrations, not a full visual imitation-learning benchmark. Audit-Then-Sample is a certification-and-abstention controller for measured candidate pools, not a hardware safety certificate.
+The paper claims conditional inference-time evidence under audited CPU simulation regimes. It does not claim real-robot validation, universal high-`N` improvement, production-scale visual Diffusion Policy performance, or that calibration always repairs a bad scorer. The PushT and FetchPush paths are simulator evidence from low-dimensional observations and heuristic demonstrations, not full visual imitation-learning benchmarks. Audit-Then-Sample is a certification-and-abstention controller for measured candidate pools, not a hardware safety certificate.
 
 ## 2. Setup
 
@@ -77,6 +77,7 @@ Primary artifacts:
 - Diversity curves: `results/tables/controlled_sampler_diversity.csv`
 - True diffusion diversity: `results/tables/true_diffusion_diversity.csv`
 - PushT diversity: `results/tables/pusht_diversity.csv`
+- FetchPush diversity: `results/tables/fetch_robotics_diversity.csv`
 
 Full-run evidence: the controlled low-diversity high-minus-low selected-utility effect is approximately `0.000` with 95% CI containing zero (`[-4.79e-16, 4.23e-16]`), while high-diversity aligned selection gains `0.601` selected real utility with CI low `0.550`. In PushT, the low-diversity oracle gain is small (`0.0195`, CI low `0.00037`), matching the saturation story without promoting it as a broad benchmark win.
 
@@ -92,6 +93,7 @@ Primary artifacts:
 - Scorer gap CIs: `results/tables/scorer_comparison_effect_cis.csv`
 - True diffusion scorer gaps: `results/tables/true_diffusion_scorer_gap_cis.csv`
 - PushT scorer gaps: `results/tables/pusht_scorer_gap_cis.csv`
+- FetchPush scorer gaps: `results/tables/fetch_robotics_scorer_gap_cis.csv`
 
 Full-run evidence: true action diffusion has an oracle-minus-tail-only gap of `0.174` at high `N` with CI low `0.085`; PushT has an oracle-minus-misaligned high-`N` gap of `0.141` with CI low `0.085`. Negative controls also show harm: true-DDPM anti-correlated scoring changes selected real utility by `-0.406` (CI high `-0.371`), and PushT misaligned scoring changes selected real utility by `-0.048` (CI high `-0.031`).
 
@@ -114,6 +116,7 @@ Primary artifacts:
 - True diffusion runtime: `results/figures/true_diffusion_runtime.png`
 - True diffusion sampler comparison: `results/figures/true_diffusion_sampler_comparison.png`
 - PushT runtime table: `results/tables/pusht_runtime.csv`
+- FetchPush runtime table: `results/tables/fetch_robotics_runtime.csv`
 
 Full-run evidence: the latency-adjusted budget sweep selects `N=32, K=2` rather than the largest `N=32, K=32` corner, using only `6.25%` of the largest tested `N x K` budget and improving the latency-adjusted objective by `3.31` with CI low `3.23`. Measured runtime tables contain 540 true-diffusion rows (`0.18` to `13.42` ms per candidate) and 180 PushT rows (`104.78` to `373.44` ms per candidate, including rollout cost).
 
@@ -200,7 +203,7 @@ Primary artifacts:
 
 ### 4.4 N Versus K Budget Sweep
 
-The `N x K` sweep reports raw real utility, budget `B = N x K`, utility per diffusion step, and latency-adjusted utility. This family supplies the abstract latency law that later connects to measured runtime in true diffusion and PushT.
+The `N x K` sweep reports raw real utility, budget `B = N x K`, utility per diffusion step, and latency-adjusted utility. This family supplies the abstract latency law that later connects to measured runtime in true diffusion, PushT, and FetchPush.
 
 Primary artifacts:
 
@@ -271,6 +274,23 @@ Primary artifacts:
 
 Full-run evidence: PushT aligned oracle selected-utility gain is `0.121` with CI low `0.0576`; selected max-coverage gain is `0.103` with CI low `0.0381`; selected final-coverage gain is `0.0216` with CI low `0.00099`; selected success gain is `0.0`. The artifact contains 2,880 simulator rollout rows, 2,100 rollout-metric seed rows, and 12 paired seed-episode units for critical CI rows.
 
+### 4.8 FetchPush Robotics Benchmark
+
+The FetchPush tier uses `FetchPush-v4` from Gymnasium Robotics/MuJoCo with low-dimensional observations and heuristic demonstrations for CPU-feasible training. Candidate trajectories are evaluated by actual simulator rollout. The selected metrics are scalar rollout utility, best-distance progress, final progress, success, and sample plus rollout runtime.
+
+The full run is configured for four seeds, three evaluation episodes, horizon 14, 8 candidates, and `K = 1, 8`, producing 12 paired seed-episode units for key CI rows. The benchmark includes aligned, low-diversity, and high-temperature anti-tail regimes. This scoped limitation does not claim full visual or real-robot validation.
+
+Primary artifacts:
+
+- `results/tables/fetch_robotics_curves.csv`
+- `results/tables/fetch_robotics_rollouts.csv`
+- `results/tables/fetch_robotics_rollout_metric_effect_cis.csv`
+- `results/tables/fetch_robotics_rollout_metric_seed_aggregate.csv`
+- `results/tables/fetch_robotics_runtime.csv`
+- `results/figures/fetch_robotics_selection.png`
+
+Full-run evidence: FetchPush aligned oracle selected-utility gain is `0.00690` with CI low `0.00594`; low-diversity gain is `0.000317`; anti-oracle selected-utility change is `-0.0314` with CI high `-0.0162`; the high-`N` oracle-minus-anti-oracle gap is `0.0571` with CI low `0.0302`. The artifact contains 1,152 simulator rollout rows, 1,536 rollout-metric seed rows, and 12 paired seed-episode units for critical CI rows.
+
 ## 5. Audit and Claim Discipline
 
 The repository uses an explicit claim audit to prevent accidental overstatement. The audit writes:
@@ -280,12 +300,13 @@ The repository uses an explicit claim audit to prevent accidental overstatement.
 - `results/ideal_metrics_status.json`
 - `results/ideal_metrics_status.md`
 
-The audit splits evidence into toy-controlled, controller/fix, learned-policy-lite, true-DDPM, and PushT gates. Global diffusion-policy wording requires the true-DDPM gate and PushT rollout-metric gate. Fix wording requires the controller/fix gate, which combines diversity, tail-alignment, latency, calibration/repair, and negative-control evidence. Learned-lite results remain useful supporting evidence, but they do not by themselves justify broad diffusion-policy language.
+The audit splits evidence into toy-controlled, controller/fix, learned-policy-lite, true-DDPM, PushT, and FetchPush gates. Global diffusion-policy wording requires the true-DDPM, PushT, and FetchPush rollout-metric gates. Fix wording requires the controller/fix gate, which combines diversity, tail-alignment, latency, calibration/repair, and negative-control evidence. Learned-lite results remain useful supporting evidence, but they do not by themselves justify broad diffusion-policy language.
 
 The reviewer-skepticism checklist requires:
 
 - true DDPM survives;
 - PushT survives with rollout metrics;
+- FetchPush survives with rollout metrics;
 - no real-robot overclaim;
 - no full visual-policy overclaim;
 - runtime evidence present;
@@ -293,22 +314,22 @@ The reviewer-skepticism checklist requires:
 - negative controls present;
 - no full-run low-power warning.
 
-Full-run audit result: `all_strong=true`, `num_supported=18`, `num_partial=0`, `num_unsupported=0`, and `low_statistical_power.warning=null`. The reviewer-skepticism checklist passes for true DDPM, PushT, runtime, controller/fix evidence, negative controls, overclaim checks, and statistical power.
+Full-run audit result: `all_strong=true`, `num_supported=20`, `num_partial=0`, `num_unsupported=0`, and `low_statistical_power.warning=null`. The reviewer-skepticism checklist passes for true DDPM, PushT, FetchPush, runtime, controller/fix evidence, negative controls, overclaim checks, and statistical power.
 
 Reviewer concern/evidence matrix:
 
 | Likely concern | Paper answer | Direct artifact |
 |---|---|---|
-| "High N helps everywhere" | Misaligned controlled and PushT scorers have negative selected-real changes. | `results/claims_status.md`, claims 3 and 14 |
+| "High N helps everywhere" | Misaligned controlled, PushT, and FetchPush anti-tail controls have negative selected-real changes. | `results/claims_status.md`, claims 3, 15, and 17 |
 | "Controller admits unsafe high N" | Harmful negative controls have zero false admits; all admitted rows have positive utility/tail/latency LCBs. | `results/audit_then_sample_summary.json`; `results/tables/audit_then_sample_decisions.csv` |
-| "This is only a toy sampler" | Strong wording requires true-DDPM and PushT gates; learned-lite and controlled tiers are supporting context. | `results/ideal_metrics_status.json`, claims 13-18 |
-| "Runtime ignored" | Budget sweep and measured true-diffusion/PushT runtime are audited. | `results/tables/nk_budget_latency_effect_ci.csv`; `results/tables/true_diffusion_runtime.csv`; `results/tables/pusht_runtime.csv` |
+| "This is only a toy sampler" | Strong wording requires true-DDPM, PushT, and FetchPush gates; learned-lite and controlled tiers are supporting context. | `results/ideal_metrics_status.json`, claims 13-20 |
+| "Runtime ignored" | Budget sweep and measured true-diffusion, PushT, and FetchPush runtime are audited. | `results/tables/nk_budget_latency_effect_ci.csv`; `results/tables/true_diffusion_runtime.csv`; `results/tables/pusht_runtime.csv`; `results/tables/fetch_robotics_runtime.csv` |
 | "Repair always works" | Calibration has both success and failure rows; repair is used only under held-out lower-bound gates. | `results/tables/audit_then_sample_calibration.csv` |
-| "Robot validity overstated" | Scope excludes real robots, hardware safety, production visual policies, and full visual PushT imitation learning. | `paper/limitations.md`; `results/ideal_metrics_status.json` |
+| "Robot validity overstated" | Scope excludes real robots, hardware safety, production visual policies, and full visual benchmark imitation learning. | `paper/limitations.md`; `results/ideal_metrics_status.json` |
 
 ### What Would Falsify This?
 
-The main empirical claim would be falsified if any harmful negative-control row were admitted as `increase_N`, if an admitted `increase_N` row had a nonpositive utility, tail, or latency-adjusted lower bound, or if rerunning the claim audit produced unsupported global diffusion-policy wording. The true-DDPM tier would be weakened if DDIM or DDPM oracle gains lost positive lower bounds or anti-correlated scoring no longer showed harmful selection pressure. The PushT tier would be weakened if actual simulator rollout metrics lost the aligned utility or coverage lower bounds, or if the misaligned scorer no longer exposed a positive oracle gap. The controller claim would also fail under distribution shift unless fresh audits re-establish diversity, tail utility, runtime, and negative-control evidence.
+The main empirical claim would be falsified if any harmful negative-control row were admitted as `increase_N`, if an admitted `increase_N` row had a nonpositive utility, tail, or latency-adjusted lower bound, or if rerunning the claim audit produced unsupported global diffusion-policy wording. The true-DDPM tier would be weakened if DDIM or DDPM oracle gains lost positive lower bounds or anti-correlated scoring no longer showed harmful selection pressure. The PushT tier would be weakened if actual simulator rollout metrics lost the aligned utility or coverage lower bounds, or if the misaligned scorer no longer exposed a positive oracle gap. The FetchPush tier would be weakened if aligned oracle utility lost its positive lower bound, if the anti-oracle negative control stopped being harmful, or if the oracle-minus-anti-tail gap disappeared. The controller claim would also fail under distribution shift unless fresh audits re-establish diversity, tail utility, runtime, and negative-control evidence.
 
 ## 6. Discussion
 
@@ -318,9 +339,9 @@ This suggests that deployments should treat `N` as a controlled inference-time k
 
 ## 7. Limitations
 
-The evidence is CPU simulation evidence. The controlled sampler is hand-designed. The learned-lite tier is intentionally small. The image-conditioned path uses 32x32 toy renderings and a tiny CNN. The true action diffusion tier is faithful to epsilon-prediction DDPM/DDIM action sampling, but it is trained on a small toy manipulation dataset. PushT is a simulator benchmark path with low-dimensional observations and heuristic demonstrations.
+The evidence is CPU simulation evidence. The controlled sampler is hand-designed. The learned-lite tier is intentionally small. The image-conditioned path uses 32x32 toy renderings and a tiny CNN. The true action diffusion tier is faithful to epsilon-prediction DDPM/DDIM action sampling, but it is trained on a small toy manipulation dataset. PushT and FetchPush are simulator benchmark paths with low-dimensional observations and heuristic demonstrations.
 
-We do not claim real-robot validation. We do not claim universal Diffusion Policy improvement. We do not claim that high `N` always helps. We do not claim that calibration always repairs a bad scorer. We do not claim full visual-policy validation from the PushT path.
+We do not claim real-robot validation. We do not claim universal Diffusion Policy improvement. We do not claim that high `N` always helps. We do not claim that calibration always repairs a bad scorer. We do not claim full visual-policy validation from the PushT or FetchPush paths.
 
 ## 8. Conclusion
 

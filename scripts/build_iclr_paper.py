@@ -13,7 +13,7 @@ from pathlib import Path
 
 
 MAIN_PAGE_LIMIT = 9
-DEFAULT_FINAL_PDF = Path("paper") / "iclr" / "final" / "best of n diffusion policy-v3.pdf"
+DEFAULT_FINAL_PDF = Path("paper") / "iclr" / "final" / "best of n diffusion policy-v4.pdf"
 
 
 def run(cmd: list[str], cwd: Path) -> None:
@@ -88,7 +88,7 @@ def main() -> int:
     parser.add_argument(
         "--final-copy",
         default=None,
-        help="Optional repo-local final PDF path. Defaults to paper/iclr/final/best of n diffusion policy-v3.pdf.",
+        help="Optional repo-local final PDF path. Defaults to paper/iclr/final/best of n diffusion policy-v4.pdf.",
     )
     parser.add_argument(
         "--desktop-copy",

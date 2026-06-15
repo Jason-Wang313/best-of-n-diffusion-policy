@@ -11,6 +11,12 @@
       "supported": true,
       "tail_alignment_gate_supported": true
     },
+    "fetch_robotics": {
+      "benchmark_supported": true,
+      "role": "second_standard_robotics_benchmark_bridge",
+      "rollout_metrics_supported": true,
+      "supported": true
+    },
     "learned_policy_lite": {
       "role": "supporting_evidence",
       "supported": true
@@ -113,7 +119,7 @@
     {
       "category": "artifact_backing",
       "claim": "All major claims are backed by CSV/JSON artifacts.",
-      "evidence": "{\"actual_table_rows\": {\"audit_then_sample_calibration.csv\": 64, \"audit_then_sample_decisions.csv\": 256, \"controlled_sampler_aggregate.csv\": 42, \"deployment_stress_decisions.csv\": 180, \"deployment_stress_policy_effect_cis.csv\": 20, \"deployment_stress_policy_rows.csv\": 900, \"learned_policy_lite_aggregate.csv\": 240, \"learned_policy_lite_effect_cis.csv\": 120, \"nk_budget_phase.csv\": 30, \"pusht_aggregate.csv\": 525, \"pusht_effect_cis.csv\": 630, \"pusht_rollout_metric_effect_cis.csv\": 315, \"pusht_rollout_metric_seed_aggregate.csv\": 2100, \"scorer_comparison_aggregate.csv\": 147, \"true_diffusion_aggregate.csv\": 2250, \"true_diffusion_effect_cis.csv\": 1350, \"true_diffusion_sampler_comparison.csv\": 9}, \"figure_sizes_ok\": true, \"required_artifacts_exist\": true, \"table_min_rows\": {\"audit_then_sample_calibration.csv\": 20, \"audit_then_sample_decisions.csv\": 80, \"controlled_sampler_aggregate.csv\": 42, \"deployment_stress_decisions.csv\": 90, \"deployment_stress_policy_effect_cis.csv\": 12, \"deployment_stress_policy_rows.csv\": 450, \"learned_policy_lite_aggregate.csv\": 200, \"learned_policy_lite_effect_cis.csv\": 80, \"nk_budget_phase.csv\": 30, \"pusht_aggregate.csv\": 90, \"pusht_effect_cis.csv\": 70, \"pusht_rollout_metric_effect_cis.csv\": 60, \"pusht_rollout_metric_seed_aggregate.csv\": 120, \"scorer_comparison_aggregate.csv\": 49, \"true_diffusion_aggregate.csv\": 200, \"true_diffusion_effect_cis.csv\": 150, \"true_diffusion_sampler_comparison.csv\": 6}}",
+      "evidence": "{\"actual_table_rows\": {\"audit_then_sample_calibration.csv\": 64, \"audit_then_sample_decisions.csv\": 256, \"controlled_sampler_aggregate.csv\": 42, \"deployment_stress_decisions.csv\": 180, \"deployment_stress_policy_effect_cis.csv\": 20, \"deployment_stress_policy_rows.csv\": 900, \"fetch_robotics_aggregate.csv\": 384, \"fetch_robotics_effect_cis.csv\": 672, \"fetch_robotics_rollout_metric_effect_cis.csv\": 384, \"fetch_robotics_rollout_metric_seed_aggregate.csv\": 1536, \"learned_policy_lite_aggregate.csv\": 240, \"learned_policy_lite_effect_cis.csv\": 120, \"nk_budget_phase.csv\": 30, \"pusht_aggregate.csv\": 525, \"pusht_effect_cis.csv\": 630, \"pusht_rollout_metric_effect_cis.csv\": 315, \"pusht_rollout_metric_seed_aggregate.csv\": 2100, \"scorer_comparison_aggregate.csv\": 147, \"true_diffusion_aggregate.csv\": 2250, \"true_diffusion_effect_cis.csv\": 1350, \"true_diffusion_sampler_comparison.csv\": 9}, \"figure_sizes_ok\": true, \"required_artifacts_exist\": true, \"table_min_rows\": {\"audit_then_sample_calibration.csv\": 20, \"audit_then_sample_decisions.csv\": 80, \"controlled_sampler_aggregate.csv\": 42, \"deployment_stress_decisions.csv\": 90, \"deployment_stress_policy_effect_cis.csv\": 12, \"deployment_stress_policy_rows.csv\": 450, \"fetch_robotics_aggregate.csv\": 180, \"fetch_robotics_effect_cis.csv\": 120, \"fetch_robotics_rollout_metric_effect_cis.csv\": 120, \"fetch_robotics_rollout_metric_seed_aggregate.csv\": 180, \"learned_policy_lite_aggregate.csv\": 200, \"learned_policy_lite_effect_cis.csv\": 80, \"nk_budget_phase.csv\": 30, \"pusht_aggregate.csv\": 90, \"pusht_effect_cis.csv\": 70, \"pusht_rollout_metric_effect_cis.csv\": 60, \"pusht_rollout_metric_seed_aggregate.csv\": 120, \"scorer_comparison_aggregate.csv\": 49, \"true_diffusion_aggregate.csv\": 200, \"true_diffusion_effect_cis.csv\": 150, \"true_diffusion_sampler_comparison.csv\": 6}}",
       "id": 12,
       "status": "SUPPORTED"
     },
@@ -146,24 +152,31 @@
       "status": "SUPPORTED"
     },
     {
-      "category": "latency",
-      "claim": "N versus K recommendations are backed by both abstract budget sweeps and measured sampler/benchmark runtime.",
-      "evidence": "{\"nk_latency_supported\": true, \"pusht_runtime_columns\": [\"K\", \"candidates\", \"env_seed\", \"episode_idx\", \"regime\", \"rollout_runtime_seconds\", \"runtime_per_candidate_ms\", \"sample_runtime_seconds\", \"sampler\", \"seed\"], \"pusht_runtime_rows\": 180, \"true_runtime_columns\": [\"K\", \"candidates\", \"effective_sample_diversity\", \"mean_pairwise_distance\", \"regime\", \"runtime_per_candidate_ms\", \"runtime_seconds\", \"sampler\", \"seed\", \"state_idx\"], \"true_runtime_rows\": 540}",
+      "category": "fetch_robotics_benchmark",
+      "claim": "A second standard Gymnasium Robotics FetchPush benchmark tests the same trajectory-search law under MuJoCo manipulation rollouts.",
+      "evidence": "{\"aggregate_rows\": 384, \"aligned_oracle_ci\": {\"K\": \"8\", \"ci_high\": \"0.00797675106049493\", \"ci_low\": \"0.0059379598707546164\", \"confidence\": \"0.95\", \"effect\": \"high_minus_low\", \"high_n\": \"8\", \"low_n\": \"1\", \"mean\": \"0.006898979119532978\", \"metric\": \"exact_selected_real\", \"n\": \"12\", \"regime\": \"fetch_aligned\", \"sampler\": \"ddim_eps\", \"scorer\": \"oracle_real_utility_selector\", \"se\": \"0.0005246377222753844\", \"value_col\": \"exact_selected_real\"}, \"aligned_oracle_gain\": 0.00689897911953298, \"anti_oracle_ci\": {\"K\": \"8\", \"ci_high\": \"-0.01615787494397737\", \"ci_low\": \"-0.04701461839382117\", \"confidence\": \"0.95\", \"effect\": \"high_minus_low\", \"high_n\": \"8\", \"low_n\": \"1\", \"mean\": \"-0.0314416426327535\", \"metric\": \"exact_selected_real\", \"n\": \"12\", \"regime\": \"fetch_high_temp_misaligned\", \"sampler\": \"ddim_eps\", \"scorer\": \"anti_oracle_negative_control\", \"se\": \"0.008319010224018545\", \"value_col\": \"exact_selected_real\"}, \"anti_oracle_real_change\": -0.0314416426327535, \"curve_rows\": 4608, \"low_diversity_ci\": {\"K\": \"8\", \"ci_high\": \"0.00035691753027590505\", \"ci_low\": \"0.00027785801281375323\", \"confidence\": \"0.95\", \"effect\": \"high_minus_low\", \"high_n\": \"8\", \"low_n\": \"1\", \"mean\": \"0.00031714581423457957\", \"metric\": \"exact_selected_real\", \"n\": \"12\", \"regime\": \"fetch_low_diversity\", \"sampler\": \"ddim_eps\", \"scorer\": \"oracle_real_utility_selector\", \"se\": \"2.1512137171238533e-05\", \"value_col\": \"exact_selected_real\"}, \"low_diversity_oracle_gain\": 0.00031714581423457973, \"misaligned_ci\": {\"K\": \"8\", \"ci_high\": \"0.012118877498217705\", \"ci_low\": \"-0.0065927329470927415\", \"confidence\": \"0.95\", \"effect\": \"high_minus_low\", \"high_n\": \"8\", \"low_n\": \"1\", \"mean\": \"0.0012432543966687092\", \"metric\": \"exact_selected_real\", \"n\": \"12\", \"regime\": \"fetch_high_temp_misaligned\", \"sampler\": \"ddim_eps\", \"scorer\": \"misaligned_speed_scorer\", \"se\": \"0.004764248889501145\", \"value_col\": \"exact_selected_real\"}, \"misaligned_real_change\": 0.001243254396668697, \"num_rollout_rows\": 1152, \"num_runtime_rows\": 144, \"num_training_rows\": 4, \"num_training_seeds\": 4, \"oracle_gap_ci\": {\"K\": \"8\", \"N\": \"8\", \"ci_high\": \"0.08688713256176794\", \"ci_low\": \"0.030158454592918715\", \"confidence\": \"0.95\", \"effect\": \"oracle_real_utility_selector_minus_anti_oracle_negative_control\", \"mean\": \"0.05708110821673445\", \"n\": \"12\", \"regime\": \"fetch_high_temp_misaligned\", \"sampler\": \"ddim_eps\", \"se\": \"0.015723543869027502\"}, \"oracle_minus_anti_oracle\": 0.057081108216734455, \"progress_ci\": {\"K\": \"8\", \"ci_high\": \"0.0\", \"ci_low\": \"0.0\", \"confidence\": \"0.95\", \"effect\": \"high_minus_low\", \"high_n\": \"8\", \"low_n\": \"1\", \"mean\": \"0.0\", \"metric\": \"exact_selected_normalized_progress\", \"n\": \"12\", \"regime\": \"fetch_aligned\", \"sampler\": \"ddim_eps\", \"scorer\": \"oracle_real_utility_selector\", \"se\": \"0.0\", \"value_col\": \"exact_selected_normalized_progress\"}, \"rollout_metric_effect_rows\": 384, \"rollout_metric_seed_rows\": 1536, \"rollout_metrics_supported\": true, \"sampler_families\": [\"consistency_1step\", \"ddim_eps\", \"ddpm_eps\"], \"scorers\": [\"anti_oracle_negative_control\", \"diffusion_internal_score\", \"goal_progress_heuristic\", \"learned_value_critic_from_pilot_rollouts\", \"misaligned_speed_scorer\", \"oracle_real_utility_selector\", \"random_sample_selection\", \"uncertainty_aware_critic\"], \"success_ci\": {\"K\": \"8\", \"ci_high\": \"0.0\", \"ci_low\": \"0.0\", \"confidence\": \"0.95\", \"effect\": \"high_minus_low\", \"high_n\": \"8\", \"low_n\": \"1\", \"mean\": \"0.0\", \"metric\": \"exact_selected_success\", \"n\": \"12\", \"regime\": \"fetch_aligned\", \"sampler\": \"ddim_eps\", \"scorer\": \"oracle_real_utility_selector\", \"se\": \"0.0\", \"value_col\": \"exact_selected_success\"}, \"thresholds\": {\"aligned_oracle_gain_min\": 0.0, \"anti_oracle_change_max\": 0.0, \"min_ci_units\": 12, \"min_training_seeds\": 4, \"oracle_minus_anti_oracle_min\": 0.01}}",
       "id": 17,
       "status": "SUPPORTED"
     },
     {
-      "category": "tiered_claim_gate",
-      "claim": "Global diffusion-policy wording is promoted only when true-DDPM and PushT rollout-metric tiers are supported.",
-      "evidence": "{\"audit_then_sample_controller_supported\": true, \"controller_fix_gate_supported\": true, \"learned_policy_lite_supported_as_context\": true, \"pusht_benchmark_supported\": true, \"pusht_rollout_metrics_supported\": true, \"requires_true_ddpm_and_pusht_rollout_metrics\": true, \"survives_real_benchmark_path\": true, \"survives_true_ddpm\": true, \"toy_controlled_supported\": true, \"toy_only_explanation_blocked\": true, \"true_action_diffusion_supported\": true}",
+      "category": "latency",
+      "claim": "N versus K recommendations are backed by abstract budget sweeps and measured true-DDPM, PushT, and FetchPush runtime.",
+      "evidence": "{\"fetch_runtime_columns\": [\"K\", \"candidates\", \"env_seed\", \"episode_idx\", \"regime\", \"rollout_runtime_seconds\", \"runtime_per_candidate_ms\", \"sample_runtime_seconds\", \"sampler\", \"seed\"], \"fetch_runtime_rows\": 144, \"nk_latency_supported\": true, \"pusht_runtime_columns\": [\"K\", \"candidates\", \"env_seed\", \"episode_idx\", \"regime\", \"rollout_runtime_seconds\", \"runtime_per_candidate_ms\", \"sample_runtime_seconds\", \"sampler\", \"seed\"], \"pusht_runtime_rows\": 180, \"true_runtime_columns\": [\"K\", \"candidates\", \"effective_sample_diversity\", \"mean_pairwise_distance\", \"regime\", \"runtime_per_candidate_ms\", \"runtime_seconds\", \"sampler\", \"seed\", \"state_idx\"], \"true_runtime_rows\": 540}",
       "id": 18,
       "status": "SUPPORTED"
     },
     {
-      "category": "reviewer_skepticism",
-      "claim": "Reviewer-skepticism checklist passes for true DDPM, PushT, runtime, negative controls, overclaims, and statistical power.",
-      "evidence": "{\"controller_fix_tier_supported\": true, \"low_power_warning_absent\": true, \"low_statistical_power\": {\"critical_ci_units\": {\"pusht_aligned_oracle\": 12, \"pusht_oracle_gap\": 12, \"pusht_rollout_final_coverage\": 12, \"pusht_rollout_max_coverage\": 12, \"pusht_rollout_success\": 12, \"true_anti_correlated\": 12, \"true_ddim_oracle\": 12, \"true_ddpm_oracle\": 12, \"true_oracle_tail_gap\": 12}, \"is_smoke_results\": false, \"required_critical_ci_units\": 12, \"underpowered_ci_units\": {}, \"warning\": null}, \"negative_controls_present\": true, \"no_full_visual_policy_overclaim\": true, \"no_real_robot_overclaim\": true, \"pusht_survives\": true, \"real_robot_overclaim_hits\": [], \"runtime_evidence_present\": true, \"true_ddpm_survives\": true, \"visual_overclaim_hits\": []}",
+      "category": "tiered_claim_gate",
+      "claim": "Global diffusion-policy wording is promoted only when true-DDPM, PushT, and FetchPush rollout-metric tiers are supported.",
+      "evidence": "{\"audit_then_sample_controller_supported\": true, \"controller_fix_gate_supported\": true, \"fetch_robotics_supported\": true, \"fetch_rollout_metrics_supported\": true, \"learned_policy_lite_supported_as_context\": true, \"pusht_benchmark_supported\": true, \"pusht_rollout_metrics_supported\": true, \"requires_true_ddpm_pusht_and_fetchpush\": true, \"survives_real_benchmark_path\": true, \"survives_second_standard_robotics_benchmark\": true, \"survives_true_ddpm\": true, \"toy_controlled_supported\": true, \"toy_only_explanation_blocked\": true, \"true_action_diffusion_supported\": true}",
       "id": 19,
+      "status": "SUPPORTED"
+    },
+    {
+      "category": "reviewer_skepticism",
+      "claim": "Reviewer-skepticism checklist passes for true DDPM, PushT, FetchPush, runtime, negative controls, overclaims, and statistical power.",
+      "evidence": "{\"controller_fix_tier_supported\": true, \"fetch_robotics_survives\": true, \"low_power_warning_absent\": true, \"low_statistical_power\": {\"critical_ci_units\": {\"fetch_aligned_oracle\": 12, \"fetch_anti_oracle\": 12, \"fetch_oracle_gap\": 12, \"fetch_progress\": 12, \"fetch_success\": 12, \"pusht_aligned_oracle\": 12, \"pusht_oracle_gap\": 12, \"pusht_rollout_final_coverage\": 12, \"pusht_rollout_max_coverage\": 12, \"pusht_rollout_success\": 12, \"true_anti_correlated\": 12, \"true_ddim_oracle\": 12, \"true_ddpm_oracle\": 12, \"true_oracle_tail_gap\": 12}, \"is_smoke_results\": false, \"required_critical_ci_units\": 12, \"underpowered_ci_units\": {}, \"warning\": null}, \"negative_controls_present\": true, \"no_full_visual_policy_overclaim\": true, \"no_real_robot_overclaim\": true, \"pusht_survives\": true, \"real_robot_overclaim_hits\": [], \"runtime_evidence_present\": true, \"true_ddpm_survives\": true, \"visual_overclaim_hits\": []}",
+      "id": 20,
       "status": "SUPPORTED"
     }
   ],
@@ -172,7 +185,7 @@
       {
         "category": "artifact_backing",
         "claim": "All major claims are backed by CSV/JSON artifacts.",
-        "evidence": "{\"actual_table_rows\": {\"audit_then_sample_calibration.csv\": 64, \"audit_then_sample_decisions.csv\": 256, \"controlled_sampler_aggregate.csv\": 42, \"deployment_stress_decisions.csv\": 180, \"deployment_stress_policy_effect_cis.csv\": 20, \"deployment_stress_policy_rows.csv\": 900, \"learned_policy_lite_aggregate.csv\": 240, \"learned_policy_lite_effect_cis.csv\": 120, \"nk_budget_phase.csv\": 30, \"pusht_aggregate.csv\": 525, \"pusht_effect_cis.csv\": 630, \"pusht_rollout_metric_effect_cis.csv\": 315, \"pusht_rollout_metric_seed_aggregate.csv\": 2100, \"scorer_comparison_aggregate.csv\": 147, \"true_diffusion_aggregate.csv\": 2250, \"true_diffusion_effect_cis.csv\": 1350, \"true_diffusion_sampler_comparison.csv\": 9}, \"figure_sizes_ok\": true, \"required_artifacts_exist\": true, \"table_min_rows\": {\"audit_then_sample_calibration.csv\": 20, \"audit_then_sample_decisions.csv\": 80, \"controlled_sampler_aggregate.csv\": 42, \"deployment_stress_decisions.csv\": 90, \"deployment_stress_policy_effect_cis.csv\": 12, \"deployment_stress_policy_rows.csv\": 450, \"learned_policy_lite_aggregate.csv\": 200, \"learned_policy_lite_effect_cis.csv\": 80, \"nk_budget_phase.csv\": 30, \"pusht_aggregate.csv\": 90, \"pusht_effect_cis.csv\": 70, \"pusht_rollout_metric_effect_cis.csv\": 60, \"pusht_rollout_metric_seed_aggregate.csv\": 120, \"scorer_comparison_aggregate.csv\": 49, \"true_diffusion_aggregate.csv\": 200, \"true_diffusion_effect_cis.csv\": 150, \"true_diffusion_sampler_comparison.csv\": 6}}",
+        "evidence": "{\"actual_table_rows\": {\"audit_then_sample_calibration.csv\": 64, \"audit_then_sample_decisions.csv\": 256, \"controlled_sampler_aggregate.csv\": 42, \"deployment_stress_decisions.csv\": 180, \"deployment_stress_policy_effect_cis.csv\": 20, \"deployment_stress_policy_rows.csv\": 900, \"fetch_robotics_aggregate.csv\": 384, \"fetch_robotics_effect_cis.csv\": 672, \"fetch_robotics_rollout_metric_effect_cis.csv\": 384, \"fetch_robotics_rollout_metric_seed_aggregate.csv\": 1536, \"learned_policy_lite_aggregate.csv\": 240, \"learned_policy_lite_effect_cis.csv\": 120, \"nk_budget_phase.csv\": 30, \"pusht_aggregate.csv\": 525, \"pusht_effect_cis.csv\": 630, \"pusht_rollout_metric_effect_cis.csv\": 315, \"pusht_rollout_metric_seed_aggregate.csv\": 2100, \"scorer_comparison_aggregate.csv\": 147, \"true_diffusion_aggregate.csv\": 2250, \"true_diffusion_effect_cis.csv\": 1350, \"true_diffusion_sampler_comparison.csv\": 9}, \"figure_sizes_ok\": true, \"required_artifacts_exist\": true, \"table_min_rows\": {\"audit_then_sample_calibration.csv\": 20, \"audit_then_sample_decisions.csv\": 80, \"controlled_sampler_aggregate.csv\": 42, \"deployment_stress_decisions.csv\": 90, \"deployment_stress_policy_effect_cis.csv\": 12, \"deployment_stress_policy_rows.csv\": 450, \"fetch_robotics_aggregate.csv\": 180, \"fetch_robotics_effect_cis.csv\": 120, \"fetch_robotics_rollout_metric_effect_cis.csv\": 120, \"fetch_robotics_rollout_metric_seed_aggregate.csv\": 180, \"learned_policy_lite_aggregate.csv\": 200, \"learned_policy_lite_effect_cis.csv\": 80, \"nk_budget_phase.csv\": 30, \"pusht_aggregate.csv\": 90, \"pusht_effect_cis.csv\": 70, \"pusht_rollout_metric_effect_cis.csv\": 60, \"pusht_rollout_metric_seed_aggregate.csv\": 120, \"scorer_comparison_aggregate.csv\": 49, \"true_diffusion_aggregate.csv\": 200, \"true_diffusion_effect_cis.csv\": 150, \"true_diffusion_sampler_comparison.csv\": 6}}",
         "id": 12,
         "status": "SUPPORTED"
       }
@@ -254,6 +267,15 @@
         "status": "SUPPORTED"
       }
     ],
+    "fetch_robotics_benchmark": [
+      {
+        "category": "fetch_robotics_benchmark",
+        "claim": "A second standard Gymnasium Robotics FetchPush benchmark tests the same trajectory-search law under MuJoCo manipulation rollouts.",
+        "evidence": "{\"aggregate_rows\": 384, \"aligned_oracle_ci\": {\"K\": \"8\", \"ci_high\": \"0.00797675106049493\", \"ci_low\": \"0.0059379598707546164\", \"confidence\": \"0.95\", \"effect\": \"high_minus_low\", \"high_n\": \"8\", \"low_n\": \"1\", \"mean\": \"0.006898979119532978\", \"metric\": \"exact_selected_real\", \"n\": \"12\", \"regime\": \"fetch_aligned\", \"sampler\": \"ddim_eps\", \"scorer\": \"oracle_real_utility_selector\", \"se\": \"0.0005246377222753844\", \"value_col\": \"exact_selected_real\"}, \"aligned_oracle_gain\": 0.00689897911953298, \"anti_oracle_ci\": {\"K\": \"8\", \"ci_high\": \"-0.01615787494397737\", \"ci_low\": \"-0.04701461839382117\", \"confidence\": \"0.95\", \"effect\": \"high_minus_low\", \"high_n\": \"8\", \"low_n\": \"1\", \"mean\": \"-0.0314416426327535\", \"metric\": \"exact_selected_real\", \"n\": \"12\", \"regime\": \"fetch_high_temp_misaligned\", \"sampler\": \"ddim_eps\", \"scorer\": \"anti_oracle_negative_control\", \"se\": \"0.008319010224018545\", \"value_col\": \"exact_selected_real\"}, \"anti_oracle_real_change\": -0.0314416426327535, \"curve_rows\": 4608, \"low_diversity_ci\": {\"K\": \"8\", \"ci_high\": \"0.00035691753027590505\", \"ci_low\": \"0.00027785801281375323\", \"confidence\": \"0.95\", \"effect\": \"high_minus_low\", \"high_n\": \"8\", \"low_n\": \"1\", \"mean\": \"0.00031714581423457957\", \"metric\": \"exact_selected_real\", \"n\": \"12\", \"regime\": \"fetch_low_diversity\", \"sampler\": \"ddim_eps\", \"scorer\": \"oracle_real_utility_selector\", \"se\": \"2.1512137171238533e-05\", \"value_col\": \"exact_selected_real\"}, \"low_diversity_oracle_gain\": 0.00031714581423457973, \"misaligned_ci\": {\"K\": \"8\", \"ci_high\": \"0.012118877498217705\", \"ci_low\": \"-0.0065927329470927415\", \"confidence\": \"0.95\", \"effect\": \"high_minus_low\", \"high_n\": \"8\", \"low_n\": \"1\", \"mean\": \"0.0012432543966687092\", \"metric\": \"exact_selected_real\", \"n\": \"12\", \"regime\": \"fetch_high_temp_misaligned\", \"sampler\": \"ddim_eps\", \"scorer\": \"misaligned_speed_scorer\", \"se\": \"0.004764248889501145\", \"value_col\": \"exact_selected_real\"}, \"misaligned_real_change\": 0.001243254396668697, \"num_rollout_rows\": 1152, \"num_runtime_rows\": 144, \"num_training_rows\": 4, \"num_training_seeds\": 4, \"oracle_gap_ci\": {\"K\": \"8\", \"N\": \"8\", \"ci_high\": \"0.08688713256176794\", \"ci_low\": \"0.030158454592918715\", \"confidence\": \"0.95\", \"effect\": \"oracle_real_utility_selector_minus_anti_oracle_negative_control\", \"mean\": \"0.05708110821673445\", \"n\": \"12\", \"regime\": \"fetch_high_temp_misaligned\", \"sampler\": \"ddim_eps\", \"se\": \"0.015723543869027502\"}, \"oracle_minus_anti_oracle\": 0.057081108216734455, \"progress_ci\": {\"K\": \"8\", \"ci_high\": \"0.0\", \"ci_low\": \"0.0\", \"confidence\": \"0.95\", \"effect\": \"high_minus_low\", \"high_n\": \"8\", \"low_n\": \"1\", \"mean\": \"0.0\", \"metric\": \"exact_selected_normalized_progress\", \"n\": \"12\", \"regime\": \"fetch_aligned\", \"sampler\": \"ddim_eps\", \"scorer\": \"oracle_real_utility_selector\", \"se\": \"0.0\", \"value_col\": \"exact_selected_normalized_progress\"}, \"rollout_metric_effect_rows\": 384, \"rollout_metric_seed_rows\": 1536, \"rollout_metrics_supported\": true, \"sampler_families\": [\"consistency_1step\", \"ddim_eps\", \"ddpm_eps\"], \"scorers\": [\"anti_oracle_negative_control\", \"diffusion_internal_score\", \"goal_progress_heuristic\", \"learned_value_critic_from_pilot_rollouts\", \"misaligned_speed_scorer\", \"oracle_real_utility_selector\", \"random_sample_selection\", \"uncertainty_aware_critic\"], \"success_ci\": {\"K\": \"8\", \"ci_high\": \"0.0\", \"ci_low\": \"0.0\", \"confidence\": \"0.95\", \"effect\": \"high_minus_low\", \"high_n\": \"8\", \"low_n\": \"1\", \"mean\": \"0.0\", \"metric\": \"exact_selected_success\", \"n\": \"12\", \"regime\": \"fetch_aligned\", \"sampler\": \"ddim_eps\", \"scorer\": \"oracle_real_utility_selector\", \"se\": \"0.0\", \"value_col\": \"exact_selected_success\"}, \"thresholds\": {\"aligned_oracle_gain_min\": 0.0, \"anti_oracle_change_max\": 0.0, \"min_ci_units\": 12, \"min_training_seeds\": 4, \"oracle_minus_anti_oracle_min\": 0.01}}",
+        "id": 17,
+        "status": "SUPPORTED"
+      }
+    ],
     "finite_law": [
       {
         "category": "finite_law",
@@ -273,9 +295,9 @@
       },
       {
         "category": "latency",
-        "claim": "N versus K recommendations are backed by both abstract budget sweeps and measured sampler/benchmark runtime.",
-        "evidence": "{\"nk_latency_supported\": true, \"pusht_runtime_columns\": [\"K\", \"candidates\", \"env_seed\", \"episode_idx\", \"regime\", \"rollout_runtime_seconds\", \"runtime_per_candidate_ms\", \"sample_runtime_seconds\", \"sampler\", \"seed\"], \"pusht_runtime_rows\": 180, \"true_runtime_columns\": [\"K\", \"candidates\", \"effective_sample_diversity\", \"mean_pairwise_distance\", \"regime\", \"runtime_per_candidate_ms\", \"runtime_seconds\", \"sampler\", \"seed\", \"state_idx\"], \"true_runtime_rows\": 540}",
-        "id": 17,
+        "claim": "N versus K recommendations are backed by abstract budget sweeps and measured true-DDPM, PushT, and FetchPush runtime.",
+        "evidence": "{\"fetch_runtime_columns\": [\"K\", \"candidates\", \"env_seed\", \"episode_idx\", \"regime\", \"rollout_runtime_seconds\", \"runtime_per_candidate_ms\", \"sample_runtime_seconds\", \"sampler\", \"seed\"], \"fetch_runtime_rows\": 144, \"nk_latency_supported\": true, \"pusht_runtime_columns\": [\"K\", \"candidates\", \"env_seed\", \"episode_idx\", \"regime\", \"rollout_runtime_seconds\", \"runtime_per_candidate_ms\", \"sample_runtime_seconds\", \"sampler\", \"seed\"], \"pusht_runtime_rows\": 180, \"true_runtime_columns\": [\"K\", \"candidates\", \"effective_sample_diversity\", \"mean_pairwise_distance\", \"regime\", \"runtime_per_candidate_ms\", \"runtime_seconds\", \"sampler\", \"seed\", \"state_idx\"], \"true_runtime_rows\": 540}",
+        "id": 18,
         "status": "SUPPORTED"
       }
     ],
@@ -309,18 +331,18 @@
     "reviewer_skepticism": [
       {
         "category": "reviewer_skepticism",
-        "claim": "Reviewer-skepticism checklist passes for true DDPM, PushT, runtime, negative controls, overclaims, and statistical power.",
-        "evidence": "{\"controller_fix_tier_supported\": true, \"low_power_warning_absent\": true, \"low_statistical_power\": {\"critical_ci_units\": {\"pusht_aligned_oracle\": 12, \"pusht_oracle_gap\": 12, \"pusht_rollout_final_coverage\": 12, \"pusht_rollout_max_coverage\": 12, \"pusht_rollout_success\": 12, \"true_anti_correlated\": 12, \"true_ddim_oracle\": 12, \"true_ddpm_oracle\": 12, \"true_oracle_tail_gap\": 12}, \"is_smoke_results\": false, \"required_critical_ci_units\": 12, \"underpowered_ci_units\": {}, \"warning\": null}, \"negative_controls_present\": true, \"no_full_visual_policy_overclaim\": true, \"no_real_robot_overclaim\": true, \"pusht_survives\": true, \"real_robot_overclaim_hits\": [], \"runtime_evidence_present\": true, \"true_ddpm_survives\": true, \"visual_overclaim_hits\": []}",
-        "id": 19,
+        "claim": "Reviewer-skepticism checklist passes for true DDPM, PushT, FetchPush, runtime, negative controls, overclaims, and statistical power.",
+        "evidence": "{\"controller_fix_tier_supported\": true, \"fetch_robotics_survives\": true, \"low_power_warning_absent\": true, \"low_statistical_power\": {\"critical_ci_units\": {\"fetch_aligned_oracle\": 12, \"fetch_anti_oracle\": 12, \"fetch_oracle_gap\": 12, \"fetch_progress\": 12, \"fetch_success\": 12, \"pusht_aligned_oracle\": 12, \"pusht_oracle_gap\": 12, \"pusht_rollout_final_coverage\": 12, \"pusht_rollout_max_coverage\": 12, \"pusht_rollout_success\": 12, \"true_anti_correlated\": 12, \"true_ddim_oracle\": 12, \"true_ddpm_oracle\": 12, \"true_oracle_tail_gap\": 12}, \"is_smoke_results\": false, \"required_critical_ci_units\": 12, \"underpowered_ci_units\": {}, \"warning\": null}, \"negative_controls_present\": true, \"no_full_visual_policy_overclaim\": true, \"no_real_robot_overclaim\": true, \"pusht_survives\": true, \"real_robot_overclaim_hits\": [], \"runtime_evidence_present\": true, \"true_ddpm_survives\": true, \"visual_overclaim_hits\": []}",
+        "id": 20,
         "status": "SUPPORTED"
       }
     ],
     "tiered_claim_gate": [
       {
         "category": "tiered_claim_gate",
-        "claim": "Global diffusion-policy wording is promoted only when true-DDPM and PushT rollout-metric tiers are supported.",
-        "evidence": "{\"audit_then_sample_controller_supported\": true, \"controller_fix_gate_supported\": true, \"learned_policy_lite_supported_as_context\": true, \"pusht_benchmark_supported\": true, \"pusht_rollout_metrics_supported\": true, \"requires_true_ddpm_and_pusht_rollout_metrics\": true, \"survives_real_benchmark_path\": true, \"survives_true_ddpm\": true, \"toy_controlled_supported\": true, \"toy_only_explanation_blocked\": true, \"true_action_diffusion_supported\": true}",
-        "id": 18,
+        "claim": "Global diffusion-policy wording is promoted only when true-DDPM, PushT, and FetchPush rollout-metric tiers are supported.",
+        "evidence": "{\"audit_then_sample_controller_supported\": true, \"controller_fix_gate_supported\": true, \"fetch_robotics_supported\": true, \"fetch_rollout_metrics_supported\": true, \"learned_policy_lite_supported_as_context\": true, \"pusht_benchmark_supported\": true, \"pusht_rollout_metrics_supported\": true, \"requires_true_ddpm_pusht_and_fetchpush\": true, \"survives_real_benchmark_path\": true, \"survives_second_standard_robotics_benchmark\": true, \"survives_true_ddpm\": true, \"toy_controlled_supported\": true, \"toy_only_explanation_blocked\": true, \"true_action_diffusion_supported\": true}",
+        "id": 19,
         "status": "SUPPORTED"
       }
     ],
@@ -336,6 +358,11 @@
   },
   "low_statistical_power": {
     "critical_ci_units": {
+      "fetch_aligned_oracle": 12,
+      "fetch_anti_oracle": 12,
+      "fetch_oracle_gap": 12,
+      "fetch_progress": 12,
+      "fetch_success": 12,
       "pusht_aligned_oracle": 12,
       "pusht_oracle_gap": 12,
       "pusht_rollout_final_coverage": 12,
@@ -352,15 +379,21 @@
     "warning": null
   },
   "num_partial": 0,
-  "num_strong": 19,
-  "num_supported": 19,
+  "num_strong": 20,
+  "num_supported": 20,
   "num_unsupported": 0,
   "overclaims": [],
   "reviewer_skepticism_checklist": {
     "controller_fix_tier_supported": true,
+    "fetch_robotics_survives": true,
     "low_power_warning_absent": true,
     "low_statistical_power": {
       "critical_ci_units": {
+        "fetch_aligned_oracle": 12,
+        "fetch_anti_oracle": 12,
+        "fetch_oracle_gap": 12,
+        "fetch_progress": 12,
+        "fetch_success": 12,
         "pusht_aligned_oracle": 12,
         "pusht_oracle_gap": 12,
         "pusht_rollout_final_coverage": 12,
@@ -443,6 +476,10 @@
         "deployment_stress_decisions.csv": 180,
         "deployment_stress_policy_effect_cis.csv": 20,
         "deployment_stress_policy_rows.csv": 900,
+        "fetch_robotics_aggregate.csv": 384,
+        "fetch_robotics_effect_cis.csv": 672,
+        "fetch_robotics_rollout_metric_effect_cis.csv": 384,
+        "fetch_robotics_rollout_metric_seed_aggregate.csv": 1536,
         "learned_policy_lite_aggregate.csv": 240,
         "learned_policy_lite_effect_cis.csv": 120,
         "nk_budget_phase.csv": 30,
@@ -464,6 +501,10 @@
         "deployment_stress_decisions.csv": 90,
         "deployment_stress_policy_effect_cis.csv": 12,
         "deployment_stress_policy_rows.csv": 450,
+        "fetch_robotics_aggregate.csv": 180,
+        "fetch_robotics_effect_cis.csv": 120,
+        "fetch_robotics_rollout_metric_effect_cis.csv": 120,
+        "fetch_robotics_rollout_metric_seed_aggregate.csv": 180,
         "learned_policy_lite_aggregate.csv": 200,
         "learned_policy_lite_effect_cis.csv": 80,
         "nk_budget_phase.csv": 30,
@@ -735,6 +776,12 @@
         "required_for_fix_wording": true,
         "supported": true,
         "tail_alignment_gate_supported": true
+      },
+      "fetch_robotics": {
+        "benchmark_supported": true,
+        "role": "second_standard_robotics_benchmark_bridge",
+        "rollout_metrics_supported": true,
+        "supported": true
       },
       "learned_policy_lite": {
         "role": "supporting_evidence",
@@ -1088,6 +1135,159 @@
         "static_aligned_cost_ci_high_max": -0.15,
         "static_vs_high_all_ci_low_min": 0.0,
         "static_vs_high_harm_ci_low_min": 0.2
+      }
+    },
+    "fetch_robotics_benchmark": {
+      "aggregate_rows": 384,
+      "aligned_oracle_ci": {
+        "K": "8",
+        "ci_high": "0.00797675106049493",
+        "ci_low": "0.0059379598707546164",
+        "confidence": "0.95",
+        "effect": "high_minus_low",
+        "high_n": "8",
+        "low_n": "1",
+        "mean": "0.006898979119532978",
+        "metric": "exact_selected_real",
+        "n": "12",
+        "regime": "fetch_aligned",
+        "sampler": "ddim_eps",
+        "scorer": "oracle_real_utility_selector",
+        "se": "0.0005246377222753844",
+        "value_col": "exact_selected_real"
+      },
+      "aligned_oracle_gain": 0.00689897911953298,
+      "anti_oracle_ci": {
+        "K": "8",
+        "ci_high": "-0.01615787494397737",
+        "ci_low": "-0.04701461839382117",
+        "confidence": "0.95",
+        "effect": "high_minus_low",
+        "high_n": "8",
+        "low_n": "1",
+        "mean": "-0.0314416426327535",
+        "metric": "exact_selected_real",
+        "n": "12",
+        "regime": "fetch_high_temp_misaligned",
+        "sampler": "ddim_eps",
+        "scorer": "anti_oracle_negative_control",
+        "se": "0.008319010224018545",
+        "value_col": "exact_selected_real"
+      },
+      "anti_oracle_real_change": -0.0314416426327535,
+      "curve_rows": 4608,
+      "low_diversity_ci": {
+        "K": "8",
+        "ci_high": "0.00035691753027590505",
+        "ci_low": "0.00027785801281375323",
+        "confidence": "0.95",
+        "effect": "high_minus_low",
+        "high_n": "8",
+        "low_n": "1",
+        "mean": "0.00031714581423457957",
+        "metric": "exact_selected_real",
+        "n": "12",
+        "regime": "fetch_low_diversity",
+        "sampler": "ddim_eps",
+        "scorer": "oracle_real_utility_selector",
+        "se": "2.1512137171238533e-05",
+        "value_col": "exact_selected_real"
+      },
+      "low_diversity_oracle_gain": 0.00031714581423457973,
+      "misaligned_ci": {
+        "K": "8",
+        "ci_high": "0.012118877498217705",
+        "ci_low": "-0.0065927329470927415",
+        "confidence": "0.95",
+        "effect": "high_minus_low",
+        "high_n": "8",
+        "low_n": "1",
+        "mean": "0.0012432543966687092",
+        "metric": "exact_selected_real",
+        "n": "12",
+        "regime": "fetch_high_temp_misaligned",
+        "sampler": "ddim_eps",
+        "scorer": "misaligned_speed_scorer",
+        "se": "0.004764248889501145",
+        "value_col": "exact_selected_real"
+      },
+      "misaligned_real_change": 0.001243254396668697,
+      "num_rollout_rows": 1152,
+      "num_runtime_rows": 144,
+      "num_training_rows": 4,
+      "num_training_seeds": 4,
+      "oracle_gap_ci": {
+        "K": "8",
+        "N": "8",
+        "ci_high": "0.08688713256176794",
+        "ci_low": "0.030158454592918715",
+        "confidence": "0.95",
+        "effect": "oracle_real_utility_selector_minus_anti_oracle_negative_control",
+        "mean": "0.05708110821673445",
+        "n": "12",
+        "regime": "fetch_high_temp_misaligned",
+        "sampler": "ddim_eps",
+        "se": "0.015723543869027502"
+      },
+      "oracle_minus_anti_oracle": 0.057081108216734455,
+      "progress_ci": {
+        "K": "8",
+        "ci_high": "0.0",
+        "ci_low": "0.0",
+        "confidence": "0.95",
+        "effect": "high_minus_low",
+        "high_n": "8",
+        "low_n": "1",
+        "mean": "0.0",
+        "metric": "exact_selected_normalized_progress",
+        "n": "12",
+        "regime": "fetch_aligned",
+        "sampler": "ddim_eps",
+        "scorer": "oracle_real_utility_selector",
+        "se": "0.0",
+        "value_col": "exact_selected_normalized_progress"
+      },
+      "rollout_metric_effect_rows": 384,
+      "rollout_metric_seed_rows": 1536,
+      "rollout_metrics_supported": true,
+      "sampler_families": [
+        "consistency_1step",
+        "ddim_eps",
+        "ddpm_eps"
+      ],
+      "scorers": [
+        "anti_oracle_negative_control",
+        "diffusion_internal_score",
+        "goal_progress_heuristic",
+        "learned_value_critic_from_pilot_rollouts",
+        "misaligned_speed_scorer",
+        "oracle_real_utility_selector",
+        "random_sample_selection",
+        "uncertainty_aware_critic"
+      ],
+      "success_ci": {
+        "K": "8",
+        "ci_high": "0.0",
+        "ci_low": "0.0",
+        "confidence": "0.95",
+        "effect": "high_minus_low",
+        "high_n": "8",
+        "low_n": "1",
+        "mean": "0.0",
+        "metric": "exact_selected_success",
+        "n": "12",
+        "regime": "fetch_aligned",
+        "sampler": "ddim_eps",
+        "scorer": "oracle_real_utility_selector",
+        "se": "0.0",
+        "value_col": "exact_selected_success"
+      },
+      "thresholds": {
+        "aligned_oracle_gain_min": 0.0,
+        "anti_oracle_change_max": 0.0,
+        "min_ci_units": 12,
+        "min_training_seeds": 4,
+        "oracle_minus_anti_oracle_min": 0.01
       }
     },
     "latency_adjustment": {
@@ -1481,6 +1681,19 @@
       }
     },
     "measured_runtime_allocation": {
+      "fetch_runtime_columns": [
+        "K",
+        "candidates",
+        "env_seed",
+        "episode_idx",
+        "regime",
+        "rollout_runtime_seconds",
+        "runtime_per_candidate_ms",
+        "sample_runtime_seconds",
+        "sampler",
+        "seed"
+      ],
+      "fetch_runtime_rows": 144,
       "nk_latency_supported": true,
       "pusht_runtime_columns": [
         "K",
@@ -1870,9 +2083,15 @@
     },
     "reviewer_skepticism_checklist": {
       "controller_fix_tier_supported": true,
+      "fetch_robotics_survives": true,
       "low_power_warning_absent": true,
       "low_statistical_power": {
         "critical_ci_units": {
+          "fetch_aligned_oracle": 12,
+          "fetch_anti_oracle": 12,
+          "fetch_oracle_gap": 12,
+          "fetch_progress": 12,
+          "fetch_success": 12,
           "pusht_aligned_oracle": 12,
           "pusht_oracle_gap": 12,
           "pusht_rollout_final_coverage": 12,
@@ -1900,11 +2119,14 @@
     "tiered_global_claim_gate": {
       "audit_then_sample_controller_supported": true,
       "controller_fix_gate_supported": true,
+      "fetch_robotics_supported": true,
+      "fetch_rollout_metrics_supported": true,
       "learned_policy_lite_supported_as_context": true,
       "pusht_benchmark_supported": true,
       "pusht_rollout_metrics_supported": true,
-      "requires_true_ddpm_and_pusht_rollout_metrics": true,
+      "requires_true_ddpm_pusht_and_fetchpush": true,
       "survives_real_benchmark_path": true,
+      "survives_second_standard_robotics_benchmark": true,
       "survives_true_ddpm": true,
       "toy_controlled_supported": true,
       "toy_only_explanation_blocked": true,

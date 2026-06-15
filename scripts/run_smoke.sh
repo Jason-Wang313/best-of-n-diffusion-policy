@@ -55,5 +55,6 @@ fi
 "${PY[@]}" scripts/run_with_src.py experiments/learned_diffusion_policy_lite.py --seeds 1 --train-states 10 --train-candidates 8 --eval-states 3 --candidates 32 --epochs 18 --mc-trials 30
 "${PY[@]}" scripts/run_with_src.py experiments/true_action_diffusion.py --seeds 1 --train-states 6 --train-candidates 4 --eval-states 1 --candidates 16 --horizon 6 --epochs 6 --diffusion-steps 16 --mc-trials 10 --k-values 1 8 --regimes id low_diversity hidden_obstacle
 "${PY[@]}" scripts/run_with_src.py experiments/pusht_benchmark.py --seeds 1 --train-states 3 --train-candidates 3 --eval-episodes 1 --candidates 8 --horizon 8 --epochs 3 --diffusion-steps 12 --mc-trials 5 --k-values 1 8 --regimes pusht_aligned pusht_low_diversity pusht_high_temp_misaligned
+"${PY[@]}" scripts/run_with_src.py experiments/fetch_robotics_benchmark.py --seeds 1 --train-states 2 --train-candidates 2 --eval-episodes 1 --candidates 4 --horizon 6 --epochs 2 --diffusion-steps 8 --mc-trials 3 --k-values 1 4 --regimes fetch_aligned fetch_low_diversity fetch_high_temp_misaligned
 "${PY[@]}" scripts/run_with_src.py experiments/deployment_stress.py --seeds 1 2 3 --episodes-per-regime 1 --candidates 32 --k-values 2 8
 "${PY[@]}" scripts/claim_audit.py --fail-on-error

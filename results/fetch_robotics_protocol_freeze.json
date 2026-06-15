@@ -1,0 +1,34 @@
+{
+  "benchmark": "Gymnasium Robotics FetchPush",
+  "candidates": 8,
+  "claim_gate": "Report as simulator benchmark evidence; no real-robot or visual-policy claim.",
+  "diffusion_steps": 16,
+  "env_id": "FetchPush-v4",
+  "epochs": 10,
+  "eval_episodes": 3,
+  "horizon": 14,
+  "k_values": [
+    1,
+    8
+  ],
+  "mc_trials": 15,
+  "n_values": [
+    1,
+    2,
+    4,
+    8
+  ],
+  "regimes": [
+    "fetch_aligned",
+    "fetch_low_diversity",
+    "fetch_high_temp_misaligned"
+  ],
+  "seeds": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "train_candidates": 4,
+  "train_states": 6
+}

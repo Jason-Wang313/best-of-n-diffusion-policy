@@ -173,6 +173,7 @@ def main() -> None:
     learned = load_json("learned_policy_lite_summary.json")
     true_diffusion = load_json("true_diffusion_summary.json")
     pusht = load_json("pusht_summary.json")
+    fetch = load_json("fetch_robotics_summary.json")
     deployment_stress = load_json("deployment_stress_summary.json")
     controlled_agg = csv_rows(RESULTS / "tables" / "controlled_sampler_aggregate.csv")
     controlled_div = csv_rows(RESULTS / "tables" / "controlled_sampler_diversity.csv")
@@ -206,6 +207,15 @@ def main() -> None:
     pusht_rollout_metric_effect_cis = csv_rows(RESULTS / "tables" / "pusht_rollout_metric_effect_cis.csv")
     pusht_rollout_metric_seed_agg = csv_rows(RESULTS / "tables" / "pusht_rollout_metric_seed_aggregate.csv")
     pusht_rollout_metric_agg = csv_rows(RESULTS / "tables" / "pusht_rollout_metric_aggregate.csv")
+    fetch_effect_cis = csv_rows(RESULTS / "tables" / "fetch_robotics_effect_cis.csv")
+    fetch_gap_cis = csv_rows(RESULTS / "tables" / "fetch_robotics_scorer_gap_cis.csv")
+    fetch_training = csv_rows(RESULTS / "tables" / "fetch_robotics_training.csv")
+    fetch_runtime = csv_rows(RESULTS / "tables" / "fetch_robotics_runtime.csv")
+    fetch_rollouts = csv_rows(RESULTS / "tables" / "fetch_robotics_rollouts.csv")
+    fetch_agg = csv_rows(RESULTS / "tables" / "fetch_robotics_aggregate.csv")
+    fetch_rollout_metric_effect_cis = csv_rows(RESULTS / "tables" / "fetch_robotics_rollout_metric_effect_cis.csv")
+    fetch_rollout_metric_seed_agg = csv_rows(RESULTS / "tables" / "fetch_robotics_rollout_metric_seed_aggregate.csv")
+    fetch_rollout_metric_agg = csv_rows(RESULTS / "tables" / "fetch_robotics_rollout_metric_aggregate.csv")
     diff_doc = read_text(ROOT / "docs" / "differentiation_from_wam_jepa.md").lower()
     checklist_doc = read_text(ROOT / "docs" / "diffusion_policy_validity_checklist.md").lower()
     theory_doc = read_text(ROOT / "docs" / "theory.md").lower()
@@ -860,6 +870,18 @@ def main() -> None:
         RESULTS / "tables" / "pusht_rollout_metric_seed_aggregate.csv",
         RESULTS / "tables" / "pusht_rollout_metric_aggregate.csv",
         RESULTS / "tables" / "pusht_rollout_metric_effect_cis.csv",
+        RESULTS / "fetch_robotics_summary.json",
+        RESULTS / "fetch_robotics_generated.tex",
+        RESULTS / "fetch_robotics_protocol_freeze.json",
+        RESULTS / "tables" / "fetch_robotics_aggregate.csv",
+        RESULTS / "tables" / "fetch_robotics_seed_aggregate.csv",
+        RESULTS / "tables" / "fetch_robotics_effect_cis.csv",
+        RESULTS / "tables" / "fetch_robotics_scorer_gap_cis.csv",
+        RESULTS / "tables" / "fetch_robotics_runtime.csv",
+        RESULTS / "tables" / "fetch_robotics_rollouts.csv",
+        RESULTS / "tables" / "fetch_robotics_rollout_metric_seed_aggregate.csv",
+        RESULTS / "tables" / "fetch_robotics_rollout_metric_aggregate.csv",
+        RESULTS / "tables" / "fetch_robotics_rollout_metric_effect_cis.csv",
         RESULTS / "figures" / "nk_budget_phase_diagram.png",
         RESULTS / "figures" / "audit_then_sample_decision_regions.png",
         RESULTS / "figures" / "deployment_stress_frontier.png",
@@ -868,6 +890,7 @@ def main() -> None:
         RESULTS / "figures" / "true_diffusion_runtime.png",
         RESULTS / "figures" / "true_diffusion_sampler_comparison.png",
         RESULTS / "figures" / "pusht_max_selection.png",
+        RESULTS / "figures" / "fetch_robotics_selection.png",
     ]
     table_min_rows = {
         "controlled_sampler_aggregate.csv": 42,
@@ -887,6 +910,10 @@ def main() -> None:
         "pusht_effect_cis.csv": 30 if is_smoke_results() else 70,
         "pusht_rollout_metric_effect_cis.csv": 15 if is_smoke_results() else 60,
         "pusht_rollout_metric_seed_aggregate.csv": 20 if is_smoke_results() else 120,
+        "fetch_robotics_aggregate.csv": 40 if is_smoke_results() else 180,
+        "fetch_robotics_effect_cis.csv": 30 if is_smoke_results() else 120,
+        "fetch_robotics_rollout_metric_effect_cis.csv": 15 if is_smoke_results() else 120,
+        "fetch_robotics_rollout_metric_seed_aggregate.csv": 20 if is_smoke_results() else 180,
     }
     table_rows_ok = all(
         csv_row_count(RESULTS / "tables" / name) >= minimum
@@ -907,6 +934,7 @@ def main() -> None:
             "true_diffusion_runtime.png",
             "true_diffusion_sampler_comparison.png",
             "pusht_max_selection.png",
+            "fetch_robotics_selection.png",
         ]
     )
     artifacts_weak = all(path.exists() and path.stat().st_size > 0 for path in required_artifacts)
@@ -1311,27 +1339,181 @@ def main() -> None:
         strong_metrics["pusht_rollout_metrics"],
     )
 
+    min_fetch_units = 1 if is_smoke_results() else 12
+    min_fetch_training_seeds = 1 if is_smoke_results() else 4
+    fetch_samplers = set(fetch.get("sampler_families") or [])
+    fetch_scorers = set(fetch.get("scorers") or [])
+    fetch_training_seeds = {row.get("seed") for row in fetch_training}
+    fetch_k_values = [int(v) for v in fetch.get("k_values") or []]
+    fetch_key_k = max(fetch_k_values) if fetch_k_values else 0
+    fetch_aligned_ci = first_row(
+        fetch_effect_cis,
+        sampler="ddim_eps",
+        regime="fetch_aligned",
+        scorer="oracle_real_utility_selector",
+        K=fetch_key_k,
+        metric="exact_selected_real",
+    )
+    fetch_low_div_ci = first_row(
+        fetch_effect_cis,
+        sampler="ddim_eps",
+        regime="fetch_low_diversity",
+        scorer="oracle_real_utility_selector",
+        K=fetch_key_k,
+        metric="exact_selected_real",
+    )
+    fetch_misaligned_ci = first_row(
+        fetch_effect_cis,
+        sampler="ddim_eps",
+        regime="fetch_high_temp_misaligned",
+        scorer="misaligned_speed_scorer",
+        K=fetch_key_k,
+        metric="exact_selected_real",
+    )
+    fetch_anti_oracle_ci = first_row(
+        fetch_effect_cis,
+        sampler="ddim_eps",
+        regime="fetch_high_temp_misaligned",
+        scorer="anti_oracle_negative_control",
+        K=fetch_key_k,
+        metric="exact_selected_real",
+    )
+    fetch_gap_ci = first_row(
+        fetch_gap_cis,
+        sampler="ddim_eps",
+        regime="fetch_high_temp_misaligned",
+        effect="oracle_real_utility_selector_minus_anti_oracle_negative_control",
+        K=fetch_key_k,
+    )
+    fetch_progress_ci = first_row(
+        fetch_rollout_metric_effect_cis,
+        sampler="ddim_eps",
+        regime="fetch_aligned",
+        scorer="oracle_real_utility_selector",
+        K=fetch_key_k,
+        metric="exact_selected_normalized_progress",
+    )
+    fetch_success_ci = first_row(
+        fetch_rollout_metric_effect_cis,
+        sampler="ddim_eps",
+        regime="fetch_aligned",
+        scorer="oracle_real_utility_selector",
+        K=fetch_key_k,
+        metric="exact_selected_success",
+    )
+    fetch_rollout_metric_columns = set(fetch.get("rollout_metric_columns") or [])
+    fetch_rollout_metrics_weak = (
+        {"exact_selected_normalized_progress", "exact_selected_final_progress", "exact_selected_success", "exact_selected_negative_final_distance"}.issubset(
+            fetch_rollout_metric_columns
+        )
+        and {"exact_selected_normalized_progress", "exact_selected_final_progress", "exact_selected_success", "exact_selected_negative_final_distance"}.issubset(
+            csv_columns(RESULTS / "tables" / "fetch_robotics_curves.csv")
+        )
+        and len(fetch_rollout_metric_effect_cis) > 0
+        and len(fetch_rollout_metric_seed_agg) > 0
+        and len(fetch_rollout_metric_agg) > 0
+    )
+    fetch_rollout_metrics_strong = (
+        fetch_rollout_metrics_weak
+        and ci_ok(fetch_progress_ci, min_n=min_fetch_units)
+        and ci_ok(fetch_success_ci, min_n=min_fetch_units)
+    )
+    fetch_weak = (
+        fetch.get("benchmark") == "Gymnasium Robotics FetchPush"
+        and fetch.get("env_id") == "FetchPush-v4"
+        and bool(fetch.get("actual_simulator_rollouts"))
+        and bool(fetch.get("standard_robotics_environment"))
+        and bool(fetch.get("true_epsilon_prediction"))
+        and bool(fetch.get("trajectory_reranking_over_sampled_actions"))
+        and {"ddim_eps", "ddpm_eps", "consistency_1step"}.issubset(fetch_samplers)
+        and {"oracle_real_utility_selector", "learned_value_critic_from_pilot_rollouts", "anti_oracle_negative_control"}.issubset(fetch_scorers)
+        and len(fetch_training_seeds) >= min_fetch_training_seeds
+        and len(fetch_runtime) > 0
+        and len(fetch_rollouts) > 0
+        and fetch_rollout_metrics_weak
+    )
+    fetch_strong = (
+        fetch_weak
+        and f(fetch, "fetch_aligned_oracle_gain_high_minus_low") >= 0.0
+        and f(fetch, "fetch_anti_oracle_real_change_high_minus_low") <= 0.0
+        and f(fetch, "fetch_oracle_minus_anti_oracle_high_n") >= 0.01
+        and len(fetch_agg) >= (40 if is_smoke_results() else 180)
+        and csv_row_count(RESULTS / "tables" / "fetch_robotics_curves.csv") >= (120 if is_smoke_results() else 1000)
+        and int(f(fetch, "rollout_rows", 0.0)) >= (16 if is_smoke_results() else 192)
+        and ci_ok(fetch_aligned_ci, mean_min=0.0, min_n=min_fetch_units)
+        and bool(fetch_low_div_ci)
+        and bool(fetch_misaligned_ci)
+        and ci_ok(fetch_anti_oracle_ci, mean_max=0.0, high_max=0.0, min_n=min_fetch_units)
+        and ci_ok(fetch_gap_ci, mean_min=0.01, min_n=min_fetch_units)
+        and fetch_rollout_metrics_strong
+        and bool(fetch.get("measured_wall_clock_runtime"))
+    )
+    strong_metrics["fetch_robotics_benchmark"] = {
+        "sampler_families": sorted(fetch_samplers),
+        "scorers": sorted(fetch_scorers),
+        "num_training_rows": len(fetch_training),
+        "num_training_seeds": len(fetch_training_seeds),
+        "num_runtime_rows": len(fetch_runtime),
+        "num_rollout_rows": len(fetch_rollouts),
+        "rollout_metric_effect_rows": len(fetch_rollout_metric_effect_cis),
+        "rollout_metric_seed_rows": len(fetch_rollout_metric_seed_agg),
+        "aggregate_rows": len(fetch_agg),
+        "curve_rows": csv_row_count(RESULTS / "tables" / "fetch_robotics_curves.csv"),
+        "aligned_oracle_gain": fetch.get("fetch_aligned_oracle_gain_high_minus_low"),
+        "low_diversity_oracle_gain": fetch.get("fetch_low_diversity_oracle_gain_high_minus_low"),
+        "misaligned_real_change": fetch.get("fetch_misaligned_real_change_high_minus_low"),
+        "anti_oracle_real_change": fetch.get("fetch_anti_oracle_real_change_high_minus_low"),
+        "oracle_minus_anti_oracle": fetch.get("fetch_oracle_minus_anti_oracle_high_n"),
+        "aligned_oracle_ci": fetch_aligned_ci,
+        "low_diversity_ci": fetch_low_div_ci,
+        "misaligned_ci": fetch_misaligned_ci,
+        "anti_oracle_ci": fetch_anti_oracle_ci,
+        "oracle_gap_ci": fetch_gap_ci,
+        "progress_ci": fetch_progress_ci,
+        "success_ci": fetch_success_ci,
+        "rollout_metrics_supported": fetch_rollout_metrics_strong,
+        "thresholds": {
+            "aligned_oracle_gain_min": 0.0,
+            "anti_oracle_change_max": 0.0,
+            "oracle_minus_anti_oracle_min": 0.01,
+            "min_ci_units": min_fetch_units,
+            "min_training_seeds": min_fetch_training_seeds,
+        },
+    }
+    add(
+        claims,
+        "fetch_robotics_benchmark",
+        "A second standard Gymnasium Robotics FetchPush benchmark tests the same trajectory-search law under MuJoCo manipulation rollouts.",
+        status(fetch_strong, fetch_weak),
+        strong_metrics["fetch_robotics_benchmark"],
+    )
+
     runtime_tier_strong = (
         latency_strong
         and len(true_runtime) > 0
         and len(pusht_runtime) > 0
+        and len(fetch_runtime) > 0
         and bool(true_diffusion.get("measured_wall_clock_runtime"))
         and bool(pusht.get("measured_wall_clock_runtime"))
+        and bool(fetch.get("measured_wall_clock_runtime"))
         and {"runtime_per_candidate_ms", "K", "sampler"}.issubset(csv_columns(RESULTS / "tables" / "true_diffusion_runtime.csv"))
         and {"runtime_per_candidate_ms", "K", "sampler"}.issubset(csv_columns(RESULTS / "tables" / "pusht_runtime.csv"))
+        and {"runtime_per_candidate_ms", "K", "sampler"}.issubset(csv_columns(RESULTS / "tables" / "fetch_robotics_runtime.csv"))
     )
     strong_metrics["measured_runtime_allocation"] = {
         "nk_latency_supported": latency_strong,
         "true_runtime_rows": len(true_runtime),
         "pusht_runtime_rows": len(pusht_runtime),
+        "fetch_runtime_rows": len(fetch_runtime),
         "true_runtime_columns": sorted(csv_columns(RESULTS / "tables" / "true_diffusion_runtime.csv")),
         "pusht_runtime_columns": sorted(csv_columns(RESULTS / "tables" / "pusht_runtime.csv")),
+        "fetch_runtime_columns": sorted(csv_columns(RESULTS / "tables" / "fetch_robotics_runtime.csv")),
     }
     add(
         claims,
         "latency",
-        "N versus K recommendations are backed by both abstract budget sweeps and measured sampler/benchmark runtime.",
-        status(runtime_tier_strong, len(true_runtime) > 0 and len(pusht_runtime) > 0),
+        "N versus K recommendations are backed by abstract budget sweeps and measured true-DDPM, PushT, and FetchPush runtime.",
+        status(runtime_tier_strong, len(true_runtime) > 0 and len(pusht_runtime) > 0 and len(fetch_runtime) > 0),
         strong_metrics["measured_runtime_allocation"],
     )
 
@@ -1356,6 +1538,11 @@ def main() -> None:
         "pusht_rollout_max_coverage": ci_units(pusht_rollout_max_cov_ci),
         "pusht_rollout_final_coverage": ci_units(pusht_rollout_final_cov_ci),
         "pusht_rollout_success": ci_units(pusht_rollout_success_ci),
+        "fetch_aligned_oracle": ci_units(fetch_aligned_ci),
+        "fetch_anti_oracle": ci_units(fetch_anti_oracle_ci),
+        "fetch_oracle_gap": ci_units(fetch_gap_ci),
+        "fetch_progress": ci_units(fetch_progress_ci),
+        "fetch_success": ci_units(fetch_success_ci),
     }
     required_critical_ci_units = 1 if is_smoke_results() else 12
     underpowered_ci_units = {
@@ -1395,6 +1582,12 @@ def main() -> None:
             "rollout_metrics_supported": pusht_rollout_metrics_strong,
             "required_for_global_diffusion_policy_wording": True,
         },
+        "fetch_robotics": {
+            "supported": fetch_strong and fetch_rollout_metrics_strong,
+            "benchmark_supported": fetch_strong,
+            "rollout_metrics_supported": fetch_rollout_metrics_strong,
+            "role": "second_standard_robotics_benchmark_bridge",
+        },
         "controller_fix": {
             "supported": controller_strong and low_div_strong and misaligned_strong and latency_strong and repair_strong,
             "audit_then_sample_supported": controller_strong,
@@ -1416,10 +1609,13 @@ def main() -> None:
         and bool(true_tail_ci)
         and "misaligned_corner_scorer" in pusht_scorers
         and bool(pusht_misaligned_ci)
+        and "anti_oracle_negative_control" in fetch_scorers
+        and bool(fetch_anti_oracle_ci)
     )
     reviewer_skepticism_checklist = {
         "true_ddpm_survives": true_strong,
         "pusht_survives": pusht_strong and pusht_rollout_metrics_strong,
+        "fetch_robotics_survives": fetch_strong and fetch_rollout_metrics_strong,
         "controller_fix_tier_supported": claim_gates["controller_fix"]["supported"],
         "no_real_robot_overclaim": not real_robot_overclaim_hits,
         "no_full_visual_policy_overclaim": not visual_overclaim_hits,
@@ -1429,7 +1625,7 @@ def main() -> None:
     }
     reviewer_skepticism_strong = all(reviewer_skepticism_checklist.values())
 
-    tiered_global_strong = true_strong and pusht_strong and pusht_rollout_metrics_strong
+    tiered_global_strong = true_strong and pusht_strong and pusht_rollout_metrics_strong and fetch_strong and fetch_rollout_metrics_strong
     strong_metrics["tiered_global_claim_gate"] = {
         "toy_controlled_supported": claim_gates["toy_controlled"]["supported"],
         "learned_policy_lite_supported_as_context": learned_strong,
@@ -1438,15 +1634,18 @@ def main() -> None:
         "true_action_diffusion_supported": true_strong,
         "pusht_benchmark_supported": pusht_strong,
         "pusht_rollout_metrics_supported": pusht_rollout_metrics_strong,
-        "toy_only_explanation_blocked": true_strong and pusht_strong and pusht_rollout_metrics_strong,
+        "fetch_robotics_supported": fetch_strong,
+        "fetch_rollout_metrics_supported": fetch_rollout_metrics_strong,
+        "toy_only_explanation_blocked": true_strong and pusht_strong and pusht_rollout_metrics_strong and fetch_strong and fetch_rollout_metrics_strong,
         "survives_true_ddpm": true_strong,
         "survives_real_benchmark_path": pusht_strong,
-        "requires_true_ddpm_and_pusht_rollout_metrics": True,
+        "survives_second_standard_robotics_benchmark": fetch_strong,
+        "requires_true_ddpm_pusht_and_fetchpush": True,
     }
     add(
         claims,
         "tiered_claim_gate",
-        "Global diffusion-policy wording is promoted only when true-DDPM and PushT rollout-metric tiers are supported.",
+        "Global diffusion-policy wording is promoted only when true-DDPM, PushT, and FetchPush rollout-metric tiers are supported.",
         status(tiered_global_strong),
         strong_metrics["tiered_global_claim_gate"],
     )
@@ -1460,7 +1659,7 @@ def main() -> None:
     add(
         claims,
         "reviewer_skepticism",
-        "Reviewer-skepticism checklist passes for true DDPM, PushT, runtime, negative controls, overclaims, and statistical power.",
+        "Reviewer-skepticism checklist passes for true DDPM, PushT, FetchPush, runtime, negative controls, overclaims, and statistical power.",
         status(reviewer_skepticism_strong),
         strong_metrics["reviewer_skepticism_checklist"],
     )

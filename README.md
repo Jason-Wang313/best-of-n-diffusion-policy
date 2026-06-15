@@ -4,7 +4,7 @@ Paper title: Audit-Then-Sample: Certifying When Diffusion Policies Should Search
 
 This repository studies inference-time selection for stochastic diffusion action generators. Given an observation `o`, a sampler proposes `N` action trajectories, a reranker score `S(o, tau)` selects the top-scoring candidate, and the measured quantity is real task utility minus optional denoising latency cost.
 
-The project is paper-first: the theorem is finite and tie-aware, the experiments are CPU-light, and the claim audit only promotes claims backed by CSV/JSON artifacts with confidence-interval evidence. The central fix is Audit-Then-Sample, an inference-time controller that admits high `N` only when delta-budgeted lower-bound utility, tail, diversity, and latency gates pass; otherwise it stops early, audits rollouts, repairs, increases diversity, or blocks high-`N` selection. It does not claim real-robot validation or universal Diffusion Policy improvement.
+The project is paper-first: the theorem is finite and tie-aware, the experiments are CPU-light, and the claim audit only promotes claims backed by CSV/JSON artifacts with confidence-interval evidence. The central fix is Audit-Then-Sample, an inference-time controller that admits high `N` only when delta-budgeted lower-bound utility, tail, diversity, and latency gates pass; otherwise it stops early, audits rollouts, repairs, increases diversity, or blocks high-`N` selection. The v4 package adds a second standard robotics benchmark bridge with Gymnasium Robotics FetchPush-v4/MuJoCo rollouts. It does not claim real-robot validation or universal Diffusion Policy improvement.
 
 ## Scientific Object
 
@@ -28,7 +28,7 @@ pytest
 
 Artifacts are written under `results/` by default, or `results/smoke/` for the smoke script.
 
-The claim audit also writes `results/ideal_metrics_status.json`; in this repo, `SUPPORTED` means the corresponding strong effect-size and CI gate in `docs/ideal_metrics.md` passed. The smoke run keeps the learned, benchmark, and deployment-stress legs small, while the full run uses multi-seed learned state/image evidence, 12-unit true-DDPM and PushT simulator rollout tiers, and a 180-row sequential deployment stress suite.
+The claim audit also writes `results/ideal_metrics_status.json`; in this repo, `SUPPORTED` means the corresponding strong effect-size and CI gate in `docs/ideal_metrics.md` passed. The smoke run keeps the learned, benchmark, and deployment-stress legs small, while the full run uses multi-seed learned state/image evidence, 12-unit true-DDPM, PushT, and FetchPush simulator rollout tiers, and a 180-row sequential deployment stress suite.
 
 See `docs/readiness.md` for the final audit inventory, strongest supported claim, weakest remaining claim, and CPU-only scope.
 
@@ -41,7 +41,8 @@ See `docs/readiness.md` for the final audit inventory, strongest supported claim
 - Family D: phase diagram over trajectory count `N` and denoising steps `K` at fixed budget pressure.
 - Family E: true epsilon-prediction action DDPM with DDIM sampling, stochastic DDPM-style sampling, one-step consistency-style sampling, measured runtime, and clean-target denoiser ablation over the enabled `K` grid.
 - Family F: PushT simulator benchmark path using `gym_pusht/PushT-v0`, heuristic demonstrations for CPU training, true action diffusion trajectory sampling, actual simulator rollout utility, selected coverage/success curves, reranker baselines, diversity diagnostics, and measured runtime.
-- Family G: sequential deployment stress with aligned, weak-tail, hidden-obstacle, duplicate-artifact, diversity-collapse, latency-spike, calibration-drift, missing-utility, and recovery regimes, comparing fixed low-`N`, fixed high-`N`, oracle high-`N`, static Audit-Then-Sample, and adaptive Audit-Then-Sample.
+- Family G: FetchPush-v4 Gymnasium Robotics/MuJoCo benchmark path with heuristic demonstrations for CPU training, true action diffusion trajectory sampling, actual simulator rollout utility, selected progress/success curves, anti-tail negative controls, diversity diagnostics, and measured runtime.
+- Family H: sequential deployment stress with aligned, weak-tail, hidden-obstacle, duplicate-artifact, diversity-collapse, latency-spike, calibration-drift, missing-utility, and recovery regimes, comparing fixed low-`N`, fixed high-`N`, oracle high-`N`, static Audit-Then-Sample, and adaptive Audit-Then-Sample.
 
 ## Claim Boundary
 
@@ -52,4 +53,4 @@ Promoted claims must pass `scripts/run_claim_audit.sh`. Unsupported or partial c
 - do not claim that calibration always repairs every bad scorer;
 - do not claim that Audit-Then-Sample is a hardware safety certificate or production deployment rule;
 - do not claim that a hand-designed sampler is a full Diffusion Policy model;
-- do not claim full-scale visual manipulation or real-robot validation from the PushT path.
+- do not claim full-scale visual manipulation or real-robot validation from the PushT or FetchPush paths.
