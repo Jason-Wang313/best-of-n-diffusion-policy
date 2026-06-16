@@ -8,7 +8,7 @@ Target: ICLR 2027 initial submission package. As of 2026-06-09, no official ICLR
 - Style proxy: official `iclr2026_conference.sty` and `iclr2026_conference.bst`.
 - Figures: copied from audited `results/figures/*.png` into `paper/iclr/figures/`.
 - Command: `python scripts/build_iclr_paper.py`.
-- Output: `paper/iclr/main.pdf` and `paper/iclr/final/best of n diffusion policy-v4.pdf`.
+- Output: `paper/iclr/main.pdf`, `paper/iclr/final/best of n diffusion policy-v4.pdf`, and the standardized mirror `paper/final/best of n diffusion policy-v4.pdf`.
 - Page-count gate: the build script reads the `maintextend` LaTeX label and fails if the page before references exceeds 9.
 - Observed v4 build must be regenerated after the FetchPush update; the build script enforces the 9-page main-text cap.
 - On this machine, MiKTeX's `latexmk` shim lacks Perl, so the wrapper automatically falls back to `pdflatex`/`bibtex`.

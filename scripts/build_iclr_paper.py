@@ -14,6 +14,7 @@ from pathlib import Path
 
 MAIN_PAGE_LIMIT = 9
 DEFAULT_FINAL_PDF = Path("paper") / "iclr" / "final" / "best of n diffusion policy-v4.pdf"
+DEFAULT_STANDARD_FINAL_PDF = Path("paper") / "final" / "best of n diffusion policy-v4.pdf"
 
 
 def run(cmd: list[str], cwd: Path) -> None:
@@ -137,6 +138,12 @@ def main() -> int:
     final_copy.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(pdf_path, final_copy)
     print(f"Final PDF: {final_copy}")
+
+    standard_final_copy = repo_root / DEFAULT_STANDARD_FINAL_PDF
+    if final_copy.resolve() != standard_final_copy.resolve():
+        standard_final_copy.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(pdf_path, standard_final_copy)
+        print(f"Standard final PDF: {standard_final_copy}")
 
     if args.desktop_copy:
         desktop_copy = Path(args.desktop_copy).expanduser()

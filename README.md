@@ -27,6 +27,8 @@ pytest
 ```
 
 Artifacts are written under `results/` by default, or `results/smoke/` for the smoke script.
+The final paper build writes both `paper/iclr/final/best of n diffusion policy-v4.pdf`
+and the standardized mirror `paper/final/best of n diffusion policy-v4.pdf`.
 
 The claim audit also writes `results/ideal_metrics_status.json`; in this repo, `SUPPORTED` means the corresponding strong effect-size and CI gate in `docs/ideal_metrics.md` passed. The smoke run keeps the learned, benchmark, and deployment-stress legs small, while the full run uses multi-seed learned state/image evidence, 12-unit true-DDPM, PushT, and FetchPush simulator rollout tiers, and a 180-row sequential deployment stress suite.
 

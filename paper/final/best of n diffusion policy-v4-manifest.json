@@ -1,0 +1,72 @@
+{
+  "paper_name": "Audit-Then-Sample: Certifying When Diffusion Policies Should Search More Trajectories",
+  "desktop_pdf_name": "best of n diffusion policy-v4.pdf",
+  "version": "v4",
+  "source_folder": "C:\\Users\\wangz\\best of n diffusion policy",
+  "github_repo": "Jason-Wang313/best-of-n-diffusion-policy",
+  "remote_url": "https://github.com/Jason-Wang313/best-of-n-diffusion-policy.git",
+  "repo_pdf": "paper\\final\\best of n diffusion policy-v4.pdf",
+  "nested_repo_pdf": "paper\\iclr\\final\\best of n diffusion policy-v4.pdf",
+  "desktop_pdf": "C:\\Users\\wangz\\OneDrive\\Desktop\\best of n diffusion policy-v4.pdf",
+  "pdf_sha256": "B8BFFABA567BE71AFDCAEFDB3339C72707AB24531970599DF6C6BDE41D3D44D0",
+  "pdf_pages": 11,
+  "main_text_pages_before_references": 6,
+  "verified_on": "2026-06-16",
+  "protocol_freeze_files": [
+    {
+      "path": "results\\fetch_robotics_protocol_freeze.json",
+      "status": "FROZEN",
+      "benchmark": "Gymnasium Robotics FetchPush-v4/MuJoCo rollout bridge",
+      "standard_envs": [
+        "FetchPush-v4"
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "command": "python -m compileall src experiments scripts tests -q",
+      "status": "passed"
+    },
+    {
+      "command": "python -m pytest -q",
+      "status": "passed",
+      "summary": "41 passed; 2 third-party deprecation warnings"
+    },
+    {
+      "command": "bash scripts/run_claim_audit.sh",
+      "status": "passed",
+      "summary": "20 supported claims"
+    },
+    {
+      "command": "python scripts\\build_iclr_paper.py --desktop-copy \"C:\\Users\\wangz\\OneDrive\\Desktop\\best of n diffusion policy-v4.pdf\"",
+      "status": "passed",
+      "summary": "main-text label 6 pages; total 11 pages; standard, nested, and Desktop PDFs generated"
+    },
+    {
+      "command": "rg -n \"undefined|Citation.*undefined|Reference.*undefined|Rerun to get|Overfull|LaTeX Warning|Package natbib Warning\" paper\\iclr\\main.log",
+      "status": "passed",
+      "summary": "no final unresolved citation/reference warnings, rerun warnings, or overfull boxes"
+    },
+    {
+      "command": "pdftoppm -png -r 120 paper\\final\\best of n diffusion policy-v4.pdf tmp\\pdfs\\diffpol_v4_final",
+      "status": "passed",
+      "summary": "rendered 11 pages; visually inspected pages 1, 5, 7, 10, and 11"
+    }
+  ],
+  "claim_gates": {
+    "all_promoted_claims_supported": true,
+    "supported_claim_count": 20,
+    "true_ddpm_supported": true,
+    "pusht_supported": true,
+    "fetchpush_supported": true,
+    "negative_controls_present": true,
+    "low_power_warning_absent": true,
+    "not_claimed": [
+      "real robot validation",
+      "hardware safety certification",
+      "production deployment rule",
+      "full visual-policy benchmark validation",
+      "universal high-N improvement"
+    ]
+  }
+}
